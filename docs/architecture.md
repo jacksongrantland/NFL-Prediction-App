@@ -2,8 +2,8 @@
 
 A single local repository contains a Python prediction engine/API and a React,
 TypeScript, Vite frontend. Bootstrap, source discovery, and historical ingestion
-exist today. No predictions, models, scheduled jobs, fantasy tools, or betting
-tools exist yet.
+exist today. Evaluated game baselines/models and unpublished previews now exist.
+Scheduled jobs, published/locked forecasts, fantasy and betting tools do not.
 
 Prompt 04 adds prospective schedule/roster/availability observations and strict
 local cutoff queries; see `pregame_snapshots.md` for selection policies.
@@ -21,6 +21,8 @@ local cutoff queries; see `pregame_snapshots.md` for selection policies.
 - `data/snapshots.py`: captures, manual availability validation and as-of reads.
 - `features/pipeline.py`: weekly frozen team/player features and source eligibility.
 - `evaluation/harness.py`: expanding season folds and training-only preprocessing.
+- `models/games.py`: baselines, CPU model selection, registry and one-time holdout evaluation.
+- `models/cli.py`: explicit train/evaluate/promote/preview commands, separate from HTTP reads.
 - `storage/database.py` and packaged Alembic migrations: SQLite run/cache/publication metadata.
 - `storage/analytics.py`: in-memory DuckDB reads of published Parquet snapshots.
 - `frontend/src`: connection dashboard with loading, success, failure, and retry states.

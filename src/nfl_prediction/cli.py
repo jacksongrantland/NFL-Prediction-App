@@ -7,9 +7,11 @@ import typer
 import uvicorn
 
 from nfl_prediction import __version__
+from nfl_prediction.models.cli import app as models_app
 from nfl_prediction.settings import Settings
 
 app = typer.Typer(help="Local NFL prediction tools.")
+app.add_typer(models_app, name="models")
 
 
 @app.command("build-features")

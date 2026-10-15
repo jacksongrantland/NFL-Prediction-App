@@ -1,9 +1,10 @@
 # NFL Prediction App
 
-Local Windows NFL prediction project, currently through Prompt 05 (features and evaluation harness).
+Local Windows NFL prediction project, currently through Prompt 06 (evaluated game models).
 The dashboard displays API connection health. Real 2020–2026 data can be downloaded
-and validated with the CLI; the dashboard does not display it yet. No models or
-predictions exist. Follow the numbered roadmap one stage at a time.
+and validated with the CLI; the dashboard does not display it yet. Evaluated game
+models and unpublished scheduled-game previews exist. Player projections and
+official locked prediction history are not implemented yet.
 
 Pregame schedule/roster/injury observations:
 
@@ -14,7 +15,7 @@ Pregame schedule/roster/injury observations:
 
 Choose a cutoff after your own capture; earlier queries correctly show missing
 data. See [snapshot commands, manual CSV and timestamp policy](docs/pregame_snapshots.md).
-No injury probability or prediction model exists yet. Feature preparation:
+No injury probability model exists yet. Feature preparation:
 
 ```powershell
 .\.venv\Scripts\nfl.exe build-features --smoke --output artifacts/features-smoke
@@ -25,6 +26,12 @@ No injury probability or prediction model exists yet. Feature preparation:
 Use the emitted FEATURE_ID directory. See [feature policies](docs/modeling.md) and
 [chronological evaluation](docs/evaluation.md). Historical inputs are explicitly
 approximate; the latest completed season is reserved for final model evaluation.
+
+See [game model commands and limitations](docs/game_models.md) and
+[measured validation/test results](docs/game_model_verification_2026-10-15.json).
+The selected regularized model's 2025 holdout: 285 games, 61.4% three-way accuracy,
+0.663 log loss, 10.17-point margin MAE. These are approximate historical results,
+not published pregame performance or evidence of a betting advantage.
 
 Source discovery is available through:
 

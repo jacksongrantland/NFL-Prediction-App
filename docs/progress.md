@@ -411,3 +411,69 @@ Prompt 06 is next: baseline comparisons, versioned game models and a single fina
 2025 evaluation after selection. No push, publication or scheduled task occurred.
 
 Commit: `feat(ml): add cutoff-aware features and chronological evaluation`
+
+## Prompt 06 — Evaluated versioned game models
+
+Completed October 15, 2026 (America/Chicago), after Prompt 05 local commit de7d4df.
+
+Added league/home-field and rolling-strength baselines, regularized logistic/ridge
+models, and a bounded CPU histogram-boosting challenger. Fixed parameters/seed,
+training-fold-only preprocessing, complete-season validation, and predeclared
+log-loss selection (simplest within 0.005 of the best) avoid test-driven tuning.
+Ties are a third outcome; playoff tie probability is zero. Rare regular-season
+tie probability is a documented smoothed training prior, not an overtime model.
+No post-test calibration or parameter adjustment was made.
+
+Registry artifacts retain dependency/config/feature/data lineage, checksums,
+training eligibility cutoff, validation predictions, joint home/away residuals,
+seed and candidate/promotion status. Prepared registry directories publish after
+complete writes. Explicit commands train, evaluate once, promote locally and
+preview scheduled games without retraining or creating a published forecast.
+Only trusted local joblib artifacts may be loaded.
+
+### Measured results
+
+Earlier validation: 1,139 games from 2021–2024, three ties. Multiclass log loss:
+league 0.70524; rolling 0.67262; linear 0.66484; tree 0.67289. Linear was selected.
+Its validation accuracy was 64.44%. Rolling had lower margin MAE (10.408 vs
+10.598), so selection improved probability log loss, not every metric. The tree
+did not improve the selected model. No market comparison was performed.
+
+Selected model trained on 1,408 games from 2020–2024. Model ID:
+7e7b55c635aa8de465f6efa2dc48138dc58f28d489d3f3f1547b4abe009d3956.
+Internal full training/selection time was 0.984 seconds (CLI process about five
+seconds including imports). Initial promotion status remains candidate.
+
+The final 2025 test was scored once after selection: 285 games, one tie, accuracy
+61.40%, log loss 0.66268, multiclass Brier 0.45563, margin MAE 10.1678 / RMSE
+12.9796 points, team-score MAE 7.4899 / RMSE 9.3312 points. Seeded whole-week
+bootstrap 95% interval for margin MAE: [9.2862, 11.1225]. Reliability bins expose
+overconfidence in some buckets; no test-fitted correction was applied. Saved
+evaluation is returned on repeat requests, not recomputed for selection.
+
+### Verification
+
+- `nfl models train-games artifacts/features-verified/b25b87e6f7fa843952b65ef3d67e2589a727a6a83c339e4522b5858114ceed39`:
+  passed, all four candidates compared on earlier folds.
+- `nfl models evaluate-games artifacts/models/7e7b55c635aa8de465f6efa2dc48138dc58f28d489d3f3f1547b4abe009d3956`:
+  saved the above final test once. Full small metric/bin evidence is in
+  docs/game_model_verification_2026-10-15.json; no raw player data is included.
+- Real CLI `models preview-games` returned 193 future REG/POST previews with
+  probabilities summing to one and explicit unpublished_preview labels.
+- `.\.venv\Scripts\python.exe -m pytest`: 57 passed (14.75 seconds). New tests
+  cover three-outcome probability conservation, playoff tie handling, tie scoring,
+  training never seeing holdout games, one-time test reuse, promotion prerequisites
+  and artifact corruption. No real data or downloaded model is used in tests.
+- Ruff lint/format and git diff --check passed. Frontend unchanged.
+
+Limitations: evaluations are approximate corrected-source analyses, not live
+forecast performance. No learned injury adjustment or joint score/player model
+exists yet. Expected scores are fractional and may disagree with the independent
+win model until joint reconciliation in Prompt 08. Neutral-site context is not
+modeled. Calibration and rare-tie quality need more evidence. No push, publication,
+paid source, automatic retraining or scheduled task occurred.
+
+Prompt 07 is next: supported offensive player participation/opportunity/production,
+with honest coverage and availability limitations.
+
+Commit: `feat(ml): train and evaluate versioned game prediction models`

@@ -1,0 +1,118 @@
+{
+  "model_id": "7e7b55c635aa8de465f6efa2dc48138dc58f28d489d3f3f1547b4abe009d3956",
+  "selected": "linear",
+  "training_seconds": 0.984,
+  "promotion_status": "candidate",
+  "validation": {
+    "league": {
+      "n": 1139,
+      "log_loss": 0.7052426040486646,
+      "brier_multiclass": 0.4979912655283251,
+      "accuracy": 0.5478489903424056,
+      "margin_mae": 10.997423505652776,
+      "score_mae": 7.965716834340226
+    },
+    "rolling": {
+      "n": 1139,
+      "log_loss": 0.6726183026066115,
+      "brier_multiclass": 0.46617302494735535,
+      "accuracy": 0.6215978928884986,
+      "margin_mae": 10.408484101407298,
+      "score_mae": 7.576740084441496
+    },
+    "linear": {
+      "n": 1139,
+      "log_loss": 0.6648434002244907,
+      "brier_multiclass": 0.455793701724051,
+      "accuracy": 0.6444249341527656,
+      "margin_mae": 10.597855704735856,
+      "score_mae": 7.577420200101609
+    },
+    "tree": {
+      "n": 1139,
+      "log_loss": 0.6728903353335633,
+      "brier_multiclass": 0.46501442699599455,
+      "accuracy": 0.62071992976295,
+      "margin_mae": 10.623320706181898,
+      "score_mae": 7.714760480571752
+    }
+  },
+  "final_test": {
+    "n": 285,
+    "ties": 1,
+    "log_loss": 0.6626754996500146,
+    "brier_multiclass": 0.45563135423486634,
+    "accuracy": 0.6140350877192983,
+    "margin_mae": 10.16779336214591,
+    "margin_rmse": 12.979577617047692,
+    "score_mae": 7.489932768848191,
+    "score_rmse": 9.331195798484716,
+    "calibration": [
+      {
+        "low": 0.1,
+        "n": 5,
+        "predicted": 0.18856014593108916,
+        "observed_home_win": 0.4
+      },
+      {
+        "low": 0.2,
+        "n": 17,
+        "predicted": 0.25625789110178326,
+        "observed_home_win": 0.29411764705882354
+      },
+      {
+        "low": 0.3,
+        "n": 37,
+        "predicted": 0.3564983562589278,
+        "observed_home_win": 0.32432432432432434
+      },
+      {
+        "low": 0.4,
+        "n": 56,
+        "predicted": 0.4599456079423487,
+        "observed_home_win": 0.4642857142857143
+      },
+      {
+        "low": 0.5,
+        "n": 52,
+        "predicted": 0.5515230588567378,
+        "observed_home_win": 0.5
+      },
+      {
+        "low": 0.6,
+        "n": 45,
+        "predicted": 0.6508690720590264,
+        "observed_home_win": 0.5555555555555556
+      },
+      {
+        "low": 0.7,
+        "n": 47,
+        "predicted": 0.7446899799732162,
+        "observed_home_win": 0.723404255319149
+      },
+      {
+        "low": 0.8,
+        "n": 24,
+        "predicted": 0.8450490499142074,
+        "observed_home_win": 0.8333333333333334
+      },
+      {
+        "low": 0.9,
+        "n": 2,
+        "predicted": 0.916265387791007,
+        "observed_home_win": 1.0
+      }
+    ],
+    "model_id": "7e7b55c635aa8de465f6efa2dc48138dc58f28d489d3f3f1547b4abe009d3956",
+    "season": 2025,
+    "historical_mode": "approximate_corrected_sources",
+    "margin_mae_week_bootstrap_95": [
+      9.286227685992067,
+      11.12248058067562
+    ],
+    "evaluated_at": "2026-10-15T19:44:24.543678+00:00",
+    "policy": "Final test recorded once; reruns return saved result. Do not tune against it."
+  },
+  "preview_game_count": 193,
+  "preview_type": "unpublished_preview"
+}
