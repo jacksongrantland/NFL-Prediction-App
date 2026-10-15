@@ -47,6 +47,7 @@ def test_conditional_cache_force_refresh_and_immutable_revisions(tmp_path, monke
 
 def test_incomplete_download_does_not_replace_cache(tmp_path, monkeypatch):
     db = Database(tmp_path)
+    monkeypatch.setattr(downloads.time, "sleep", lambda _: None)
     monkeypatch.setattr(downloads, "urlopen", lambda *_args, **_kw: Response(b"good"))
     url = "https://example.com/test.parquet"
     first = Downloader(tmp_path, db).fetch(url, refresh=False)
@@ -54,6 +55,17 @@ def test_incomplete_download_does_not_replace_cache(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match="Incomplete"):
         Downloader(tmp_path, db).fetch(url, refresh=True, force=True)
     assert Downloader(tmp_path, db).fetch(url, refresh=False) == first
+    assert not list((tmp_path / "raw").glob("*.part"))
+    db.close()
+
+
+def test_truncated_download_retries_then_accepts_complete_bytes(tmp_path, monkeypatch):
+    db = Database(tmp_path)
+    responses = iter([Response(b"short", length=100), Response(b"complete")])
+    monkeypatch.setattr(downloads, "urlopen", lambda *_args, **_kw: next(responses))
+    monkeypatch.setattr(downloads.time, "sleep", lambda _: None)
+    result = Downloader(tmp_path, db).fetch("https://example.com/test.parquet", refresh=True)
+    assert Path(result.path).read_bytes() == b"complete"
     assert not list((tmp_path / "raw").glob("*.part"))
     db.close()
 

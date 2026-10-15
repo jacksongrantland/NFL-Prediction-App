@@ -171,6 +171,8 @@ def normalize(
         if column in frame:
             frame[column] = frame[column].astype("string").str.strip().replace("", pd.NA)
     integers(frame, ("season", "week"), "Int16")
+    if frame.season.isna().any():
+        raise ValueError(f"{dataset}: missing required season")
     if dataset != "games" and not frame["season"].eq(season).all():
         raise ValueError(f"{dataset}: wrong season in annual source")
     frame = frame.loc[frame.season.eq(season)].copy()
@@ -254,6 +256,11 @@ def normalize(
     if frame.empty:
         raise ValueError(f"{dataset}: no rows with usable identities")
     required_ids = [key for key in keys if key not in ("week", "game_type")]
+    if dataset not in ("rosters", "weekly_rosters"):
+        required_ids += ["season", "week", "game_type"]
+    required_ids += [
+        column for column in ("home_team_id", "away_team_id", "opponent_team_id") if column in frame
+    ]
     if frame[required_ids].isna().any().any():
         raise ValueError(f"{dataset}: missing required identity")
     if (
@@ -341,7 +348,7 @@ def reconcile(frames: dict[str, pd.DataFrame]) -> dict:
         if dataset == "plays":
             context_columns.extend(("home_team_id", "away_team_id"))
         for column in context_columns:
-            if context[column].ne(context[column + "_schedule"]).any():
+            if not context[column].eq(context[column + "_schedule"]).fillna(False).all():
                 raise ValueError(f"{dataset}: incorrect game context ({column})")
         if "team_id" in context:
             valid = (
@@ -351,7 +358,7 @@ def reconcile(frames: dict[str, pd.DataFrame]) -> dict:
                 context.team_id.eq(context.away_team_id)
                 & context.opponent_team_id.eq(context.home_team_id)
             )
-            if not valid.all():
+            if not valid.fillna(False).all():
                 raise ValueError(f"{dataset}: teams do not match historical schedule")
         completed = frame.loc[frame.game_id.isin(final_ids)].copy()
         coverage["unfinalized_rows_excluded"][dataset] = len(frame) - len(completed)

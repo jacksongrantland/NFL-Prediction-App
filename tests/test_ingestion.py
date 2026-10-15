@@ -163,7 +163,7 @@ def test_later_source_failure_cannot_publish_half_a_run(fixtures, tmp_path):
     revised.loc[0, "passing_yards"] = 100
     revised.to_parquet(source, index=False)
     with pytest.raises(OSError, match="Injected"):
-        run_ingestion([2025, 2026], root, current_season=2026, downloader_factory=factory)
+        run_ingestion([2025, 2026], root, current_season=2027, downloader_factory=factory)
     db = Database(root)
     assert db.one("SELECT snapshot_id FROM active_seasons WHERE season=2025") == before
     assert db.one("SELECT snapshot_id FROM active_seasons WHERE season=2026") is None
@@ -280,3 +280,54 @@ def test_schedule_changes_are_versioned_per_season(fixtures, tmp_path):
     schedule.to_csv(source, index=False)
     rescheduled = run_ingestion([2025], root, current_season=2026, downloader_factory=factory)
     assert rescheduled["seasons"][0]["snapshot_id"] != first["seasons"][0]["snapshot_id"]
+
+
+@pytest.mark.parametrize(
+    "dataset,column",
+    [
+        ("games", "home_team"),
+        ("games", "away_team"),
+        ("games", "week"),
+        ("player_stats", "week"),
+        ("player_stats", "season_type"),
+        ("player_stats", "opponent_team"),
+        ("plays", "home_team"),
+    ],
+)
+def test_missing_required_context_is_rejected(fixtures, dataset, column):
+    from nfl_prediction.data.normalize import read_source
+
+    raw, _ = read_source(fixtures[SOURCES[dataset].format(season=2025)], dataset)
+    raw.loc[0, column] = pd.NA
+    with pytest.raises(ValueError, match="missing required"):
+        normalize(raw, dataset, 2025, "test")
+
+
+def test_unstarted_current_season_does_not_block_history(fixtures, tmp_path):
+    source = fixtures[SOURCES["games"]]
+    schedule = pd.read_csv(source)
+    upcoming = schedule.copy()
+    upcoming["season"] = 2099
+    upcoming["game_id"] = upcoming.game_id.str.replace("2025", "2099")
+    upcoming["gameday"] = upcoming.gameday.str.replace("2025", "2099")
+    upcoming[["home_score", "away_score"]] = pd.NA
+    pd.concat([schedule, upcoming]).to_csv(source, index=False)
+    report = run_ingestion(
+        [2025, 2099],
+        tmp_path / "data",
+        current_season=2099,
+        downloader_factory=fake_downloader(fixtures),
+    )
+    assert report["skipped_seasons"] == [{"season": 2099, "reason": "season_not_started"}]
+    assert season_counts(tmp_path / "data", 2025)["games"] == 2
+
+
+def test_missing_current_schedule_is_explicitly_skipped(fixtures, tmp_path):
+    report = run_ingestion(
+        [2025, 2026],
+        tmp_path / "data",
+        current_season=2026,
+        downloader_factory=fake_downloader(fixtures),
+    )
+    assert report["skipped_seasons"] == [{"season": 2026, "reason": "schedule_not_available"}]
+    assert season_counts(tmp_path / "data", 2025)["games"] == 2

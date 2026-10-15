@@ -3,6 +3,20 @@
 Run commands from the application root. Data is local and ignored by Git. No
 scheduled task is installed and no automatic retraining or prediction exists yet.
 
+See [`pregame_snapshots.md`](pregame_snapshots.md) for capture/import/query commands.
+Migration 0002 adds append-only prospective observation history. Back up SQLite
+and raw data together. Failed required-source captures/imports publish no partial
+observations. Injury-only failures publish explicit unavailable status alongside
+useful schedule/roster observations.
+
+Prompt 03 audit fixes: missing required game context now fails validation;
+truncated transfers retry up to three times. Default historical ingestion reports
+skipped current seasons when their schedule is absent or the season has not
+started, without fetching nonexistent stats. Skipped seasons never replace active
+pointers and are not claimed as complete. Once scheduled games have started,
+missing stats/finality still fail normally. Missing historical sources still fail
+the atomic run. Schedule integrity is checked before deciding to skip.
+
 ## Install locked dependencies
 
 ```powershell

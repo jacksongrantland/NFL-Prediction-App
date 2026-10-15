@@ -5,6 +5,9 @@ TypeScript, Vite frontend. Bootstrap, source discovery, and historical ingestion
 exist today. No predictions, models, scheduled jobs, fantasy tools, or betting
 tools exist yet.
 
+Prompt 04 adds prospective schedule/roster/availability observations and strict
+local cutoff queries; see `pregame_snapshots.md` for selection policies.
+
 ## Current modules
 
 - `settings.py`: validated environment settings; loopback binding only.
@@ -15,6 +18,7 @@ tools exist yet.
 - `data/downloads.py`: immutable full downloads, caching, retry and integrity checks.
 - `data/normalize.py`: explicit type/ID/alias mappings and cross-source reconciliation.
 - `data/ingest.py`: single-writer orchestration and immutable snapshot preparation.
+- `data/snapshots.py`: captures, manual availability validation and as-of reads.
 - `storage/database.py` and packaged Alembic migrations: SQLite run/cache/publication metadata.
 - `storage/analytics.py`: in-memory DuckDB reads of published Parquet snapshots.
 - `frontend/src`: connection dashboard with loading, success, failure, and retry states.
@@ -35,6 +39,9 @@ If NFL_PORT changes, update the Vite proxy target to match.
   result revisions, user roster entry and the virtual credit ledger.
 - Ignored `artifacts/` stores models and evaluation outputs; manifests link artifacts
   to data hashes and dependency versions.
+- SQLite append-only observation batches own prospective schedule, roster and
+  structured availability history (migration 0002). They preserve observation and
+  local recording times; strict queries never backdate imported reports.
 
 API operational reads use SQLite or immutable analytical snapshots. Scheduled
 writers must not compete with API requests for writable DuckDB handles. Storage

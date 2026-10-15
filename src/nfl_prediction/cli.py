@@ -12,6 +12,64 @@ from nfl_prediction.settings import Settings
 app = typer.Typer(help="Local NFL prediction tools.")
 
 
+@app.command("capture-pregame")
+def capture_pregame(
+    season: int = typer.Option(..., min=1999, max=2100),
+    data_dir: Path = typer.Option(Path("data")),
+    injuries: bool = typer.Option(True, "--injuries/--no-injuries"),
+) -> None:
+    """Observe schedule, roster and optional structured injury sources now."""
+    import json
+
+    from nfl_prediction.data.snapshots import capture
+
+    try:
+        typer.echo(json.dumps(capture(season, data_dir, include_injuries=injuries), indent=2))
+    except (ValueError, OSError, RuntimeError) as error:
+        typer.echo(f"Capture failed: {error}", err=True)
+        raise typer.Exit(1) from error
+
+
+@app.command("import-availability")
+def import_availability_csv(
+    path: Path,
+    season: int = typer.Option(..., min=1999, max=2100),
+    data_dir: Path = typer.Option(Path("data")),
+) -> None:
+    """Validate and append a sourced manual availability CSV."""
+    import json
+
+    from nfl_prediction.data.snapshots import import_availability
+
+    try:
+        typer.echo(json.dumps(import_availability(path, season, data_dir), indent=2))
+    except (ValueError, OSError, RuntimeError) as error:
+        typer.echo(f"Import failed: {error}", err=True)
+        raise typer.Exit(1) from error
+
+
+@app.command("pregame-as-of")
+def pregame_as_of(
+    game_id: str,
+    cutoff: str = typer.Option(..., help="Timezone-aware ISO 8601 timestamp."),
+    season: int = typer.Option(..., min=1999, max=2100),
+    data_dir: Path = typer.Option(Path("data")),
+    stale_hours: float = typer.Option(36, min=0.001),
+) -> None:
+    """Read only observations recorded locally by a cutoff; unknown stays explicit."""
+    import json
+
+    from nfl_prediction.data.snapshots import as_of
+
+    try:
+        typer.echo(
+            json.dumps(as_of(season, game_id, cutoff, data_dir, stale_hours=stale_hours), indent=2)
+        )
+    except (ValueError, OSError, RuntimeError) as error:
+        typer.echo(f"Query failed: {error}", err=True)
+        raise typer.Exit(1) from error
+
+
 @app.command()
 def ingest(
     season: list[int] | None = typer.Option(None, "--season", min=1999, max=2100),

@@ -271,3 +271,86 @@ Prompt 04 is next: prospective pregame schedule/roster/injury snapshots, cutoff-
 queries, structured availability tracking and the validated manual injury import.
 
 Suggested commit: `feat(data): ingest and validate historical NFL datasets`
+
+## Prompt 03 audit fixes and Prompt 04 — Pregame observations
+
+Completed October 15, 2026 (America/Chicago), following explicit user authorization
+to fix the audit findings and proceed to Prompt 04. No commit, push, publication
+or scheduled task was created. Prompt 05 has not started.
+
+### Audit fixes
+
+- Required schedule teams and game/stat/PBP context now reject nulls. Nullable
+  comparisons fail closed during reconciliation rather than silently skipping
+  unknown week/type/opponent values. Nullable roster week/type remain permitted.
+- Truncated Content-Length transfers and HTTP IncompleteRead use bounded retries;
+  exhausted attempts preserve the previous cache and remove temporary partials.
+- Default ingestion explicitly reports skipped current seasons before their games
+  start or when their schedule is not available, without fetching nonexistent
+  annual stats. Historical seasons can still publish together. Skipped seasons
+  never replace active pointers. Missing historical sources or started-season
+  failures still fail atomically. Future schedules with TBD times can be recognized
+  as unstarted using future source dates.
+
+### Prompt 04 implementation
+
+- Added `capture-pregame`, `import-availability` and `pregame-as-of` CLI commands.
+  Direct audited schedule/roster/injury adapters preserve raw bytes, hashes,
+  source manifests and observation versions. Capture needs no historical stats.
+- SQLite migration 0002 adds append-only prospective observation batches with
+  observed_at and local recorded_at. Triggers prevent update/delete. Required
+  schedule/roster observations publish atomically; injury-only failures publish
+  an explicit unavailable status while preserving useful independent progress.
+- Separate injury designation, practice participation, roster status and inactivity
+  fields. Injury designation never implies inactivity or a playing probability.
+  Roster observations remain distinct from active lists and injury observations.
+- Added a header-only CSV template and validated manual fallback. It checks
+  timestamps, GSIS syntax, schedule/team membership, source URLs, explicit boolean
+  inactivity, duplicates and malformed CSV. Invalid rows reject the entire import.
+  Valid original CSV bytes are retained immutably by checksum.
+- Strict queries require both observation and local recording by cutoff. Old
+  manual reports imported today cannot rewrite yesterday's snapshot. Historical
+  injury date_modified is metadata, not proof of original publication. Missing,
+  stale, disabled, unavailable and unknown remain visible; the no_injury_data label
+  permits a future no-injury baseline without claiming a trained model exists.
+- Added snapshot policies/commands in docs/pregame_snapshots.md and updated README,
+  architecture, contracts and operations. The parent planning file was untouched.
+
+### Verification
+
+- `.\.venv\Scripts\python.exe -m pytest`: **47 passed**, including the audit
+  regressions, snapshot revisions, late/manual report leakage, unknown/stale fields,
+  independent availability statuses, timezone offsets, immutable rows, optional
+  source failures, required-source atomicity and invalid multirow import atomicity.
+- `.\.venv\Scripts\ruff.exe check .` and `... ruff.exe format --check .`: passed.
+- `npm.cmd --prefix frontend run build`: TypeScript and Vite build passed.
+- `.\.venv\Scripts\nfl.exe capture-pregame --season 2026`: live free-source run
+  passed (final run about 4.2 seconds): 272 schedule rows, 3,042 roster rows,
+  1 quarantined unresolved roster ID, 1,697 injury rows and zero rejected injury
+  mappings. Network verification used approved external network access after the
+  sandbox denied sockets. No paid source was used.
+- Real `pregame-as-of` CLI workflow for 2026_06_ARI_LA returned 188 roster/availability
+  entries, 14 observed injury entries, and unknown for unreported players.
+  An October 14 UTC cutoff correctly returned missing schedule data. Publication
+  time and full injury coverage remain unknown. Small non-player evidence report:
+  docs/pregame_verification_2026-10-15.json. Alembic revision 0002 verified.
+- `git diff --check`: passed. Real data stays ignored; fixtures are synthetic and
+  never enter the user's real observation store. No frontend behavior changed.
+
+### Limitations and next stage
+
+Recent local observation is not proof of recent source publication or complete
+injury coverage. Free-feed publication timestamps remain null. Status text is
+preserved without a trained interpretation. Manual sources are user assertions,
+not independently authenticated reports; IDs are syntax-checked, not proof of
+membership. Roster observations are not verified active lists or depth charts.
+Today's corrected historical stats/rosters cannot establish original pregame
+versions; historical evaluations must remain approximate where timing is unproven.
+
+As-of reads currently load eligible season batches into memory; this is suitable
+for initial local use but should be profiled/indexed further if daily history grows
+large. No prediction, injury probability model, dashboard data view, or automatic
+refresh schedule exists yet. Prompt 05 is next: cutoff-aware features and
+chronological evaluation. Stop here pending user review; do not start Prompt 05.
+
+Suggested commit: `feat(data): add pregame observation history and harden ingestion`

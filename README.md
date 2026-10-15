@@ -1,9 +1,20 @@
 # NFL Prediction App
 
-Local Windows NFL prediction project, currently through Prompt 03 (ingestion).
+Local Windows NFL prediction project, currently through Prompt 04 (pregame observations).
 The dashboard displays API connection health. Real 2020–2026 data can be downloaded
 and validated with the CLI; the dashboard does not display it yet. No models or
 predictions exist. Follow the numbered roadmap one stage at a time.
+
+Pregame schedule/roster/injury observations:
+
+```powershell
+.\.venv\Scripts\nfl.exe capture-pregame --season 2026
+.\.venv\Scripts\nfl.exe pregame-as-of 2026_06_ARI_LA --season 2026 --cutoff "2026-10-15T17:00:00Z"
+```
+
+Choose a cutoff after your own capture; earlier queries correctly show missing
+data. See [snapshot commands, manual CSV and timestamp policy](docs/pregame_snapshots.md).
+No injury probability or prediction model exists yet. Prompt 05 is next.
 
 Source discovery is available through:
 

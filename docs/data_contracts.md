@@ -5,9 +5,17 @@ were sampled in Prompt 02; full data types, nullability, uniqueness, and season
 completeness must still be validated over actual ingestion runs.
 
 Prompt 03 implements games, selected plays, offensive player/team stat fields,
-and season/weekly roster observations. It does not yet ingest snaps or injuries.
-The contracts for those later entities remain targets, not implemented tables.
+and season/weekly roster observations. Its historical pipeline does not ingest
+snaps or injuries. Prospective injuries are implemented separately in Prompt 04;
+snap contracts remain future targets.
 See `operations.md` for publication and completion-evidence rules.
+
+Prompt 04 now implements prospective schedule/roster/availability observations in
+SQLite. Exact manual CSV, source lineage, cutoff and unknown/stale policies are in
+`pregame_snapshots.md`. Batches carry schema_version observations/1, season, kind,
+source, observed_at and app-generated recorded_at. Strict eligibility requires
+both times by cutoff. Unknown publication remains null. Historical stats remain
+approximate evaluation inputs without original availability evidence.
 
 - Game IDs: preserve verified nflverse game IDs as strings. Player IDs: use GSIS
   strings where verified. Team IDs: a versioned canonical abbreviation mapping.

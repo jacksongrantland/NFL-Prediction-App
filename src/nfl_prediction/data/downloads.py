@@ -5,6 +5,7 @@ import json
 import os
 import time
 from dataclasses import asdict, dataclass
+from http.client import IncompleteRead
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -14,6 +15,10 @@ from nfl_prediction.data.audit import USER_AGENT, utc_now
 from nfl_prediction.storage.database import Database
 
 MAX_BYTES = 256 * 1024 * 1024
+
+
+class IncompleteDownload(ValueError):
+    """A truncated transfer can be retried without accepting partial bytes."""
 
 
 def file_hash(path: Path) -> str:
@@ -79,7 +84,7 @@ class Downloader:
                             stream.write(chunk)
                     expected = response.headers.get("Content-Length")
                     if not size or (expected and size != int(expected)):
-                        raise ValueError(f"Incomplete download: {url}")
+                        raise IncompleteDownload(f"Incomplete download: {url}")
                     sha = digest.hexdigest()
                     suffix = ".csv" if url.endswith(".csv") else ".parquet"
                     path = self.root / "raw" / "blobs" / f"{sha}{suffix}"
@@ -109,7 +114,7 @@ class Downloader:
                 if error.code not in (429, 500, 502, 503, 504) or attempt == 2:
                     raise
                 time.sleep(2**attempt)
-            except (URLError, TimeoutError, ConnectionError):
+            except (URLError, TimeoutError, ConnectionError, IncompleteRead, IncompleteDownload):
                 if attempt == 2:
                     raise
                 time.sleep(2**attempt)

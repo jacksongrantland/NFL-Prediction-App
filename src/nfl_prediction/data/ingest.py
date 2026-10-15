@@ -6,6 +6,7 @@ import os
 import sys
 import time
 from contextlib import contextmanager
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from uuid import uuid4
@@ -237,11 +238,30 @@ def run_ingestion(
             "INSERT INTO ingestion_runs(id, status, started_at) VALUES (:id, 'running', :started)",
             {"id": run_id, "started": started},
         )
-        snapshots = []
+        snapshots, skipped = [], []
         try:
             downloader = downloader_factory(root, db)
             for season in sorted(set(seasons)):
                 progress(f"Ingesting {season}: downloading or verifying six sources...")
+                if season == current_season:
+                    schedule_source = downloader.fetch(
+                        SOURCES["games"], refresh=True, force=force_refresh
+                    )
+                    schedule, _ = read_source(Path(schedule_source.path), "games")
+                    annual = schedule.loc[schedule.season.astype("string").eq(str(season))]
+                    if annual.empty:
+                        skipped.append({"season": season, "reason": "schedule_not_available"})
+                        continue
+                    games, _, _ = normalize(schedule, "games", season, "eligibility_check")
+                    if games.home_score.isna().all() and (
+                        (
+                            games.kickoff_at.notna().all()
+                            and games.kickoff_at.gt(datetime.now(UTC)).all()
+                        )
+                        or games.source_gameday.gt(datetime.now(UTC).date()).all()
+                    ):
+                        skipped.append({"season": season, "reason": "season_not_started"})
+                        continue
                 sources = {
                     name: downloader.fetch(
                         pattern.format(season=season),
@@ -265,6 +285,7 @@ def run_ingestion(
                 )
             report = {
                 "run_id": run_id,
+                "skipped_seasons": skipped,
                 "started_at": started,
                 "finished_at": utc_now(),
                 "elapsed_seconds": round(time.perf_counter() - timer, 3),

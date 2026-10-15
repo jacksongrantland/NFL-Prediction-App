@@ -1,0 +1,47 @@
+{
+  "checked_at": "2026-10-15T19:18:51.003258+00:00",
+  "alembic_revision": "0002",
+  "source": "live nflverse downloads, not fixtures",
+  "capture_command": ".\\.venv\\Scripts\\nfl.exe capture-pregame --season 2026",
+  "datasets": [
+    {
+      "kind": "schedule",
+      "batch_id": "1d18ed378f2a606ba25ec6722effdac8a3b0684b2c7256fea4bf7e4031b8dffb",
+      "observed_at": "2026-10-15T19:18:31.236276Z",
+      "rows": 272,
+      "rejected_rows": 0,
+      "source_manifest_id": "2f085c4d146ab50dc6aebdc341a8b49a4adbbe0ae56eabeb60080e34d1f2cb62"
+    },
+    {
+      "kind": "roster",
+      "batch_id": "6f089f80201f50bb8934eea68b6ea9fee36064eaaca62ce767f9d609af959278",
+      "observed_at": "2026-10-15T19:18:31.421872Z",
+      "rows": 3042,
+      "rejected_rows": 1,
+      "source_manifest_id": "590bcd6af0cd8387dd417b36e5d8f79e6ef213a41efde4f5ed65582785089b97"
+    },
+    {
+      "kind": "injury",
+      "batch_id": "f4f51360615504ffefe804ec9dc2f9bd79cf604286afe94cf037af5dfa83dc45",
+      "observed_at": "2026-10-15T19:18:33.025930Z",
+      "rows": 1697,
+      "rejected_rows": 0,
+      "source_manifest_id": "ec5ab1f5a650c4b6f7e70d992ec548f247c568d94b4e10847926b6d376d84195"
+    }
+  ],
+  "query": {
+    "game_id": "2026_06_ARI_LA",
+    "cli_exit_code": 0,
+    "roster_rows": 188,
+    "availability_rows": 188,
+    "observed_status_rows": 14,
+    "mode": "structured_availability",
+    "earlier_cutoff_schedule": "missing",
+    "injury_coverage": "unknown"
+  },
+  "limitations": [
+    "Source publication timestamps unknown; no historical pregame availability inferred.",
+    "Roster observations are not verified active lists.",
+    "No trained injury or prediction model exists."
+  ]
+}
