@@ -1,8 +1,9 @@
 # NFL Prediction App
 
-Local Windows NFL prediction project, currently through Prompt 02 (source audit).
-The dashboard displays API connection health. No sports data or predictions are
-present yet. Follow the numbered roadmap one stage at a time.
+Local Windows NFL prediction project, currently through Prompt 03 (ingestion).
+The dashboard displays API connection health. Real 2020–2026 data can be downloaded
+and validated with the CLI; the dashboard does not display it yet. No models or
+predictions exist. Follow the numbered roadmap one stage at a time.
 
 Source discovery is available through:
 
@@ -14,6 +15,21 @@ It checks 2020–2026 release metadata and bounded samples, writing ignored
 `data/audits/source_audit.json`. See [source coverage and known gaps](docs/data_sources.md).
 The dated audit detects two injury timestamp schema gaps and exits 1; these are
 documented source limitations. This command does not ingest datasets or train models.
+
+Historical ingestion and local analytical checks:
+
+```powershell
+.\.venv\Scripts\nfl.exe ingest --season 2025 --current-season 2026
+.\.venv\Scripts\nfl.exe ingest --current-season 2026
+.\.venv\Scripts\nfl.exe data-counts 2026
+```
+
+The first command is a one-season smoke run; the second selects 2020–2026. Data
+stays under ignored `data/`. Repeat runs reuse unchanged snapshots; use
+`--force-refresh` to re-fetch historical sources without discarding prior versions.
+See [operations and recovery](docs/operations.md) and the progress log for real
+counts, measured runtimes, storage use, and known missing-ID rows. Injuries and
+snap counts are not part of this ingestion stage.
 
 ## Setup
 

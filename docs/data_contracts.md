@@ -4,6 +4,11 @@ These conventions and the schemas below govern Prompt 03 ingestion. Source heade
 were sampled in Prompt 02; full data types, nullability, uniqueness, and season
 completeness must still be validated over actual ingestion runs.
 
+Prompt 03 implements games, selected plays, offensive player/team stat fields,
+and season/weekly roster observations. It does not yet ingest snaps or injuries.
+The contracts for those later entities remain targets, not implemented tables.
+See `operations.md` for publication and completion-evidence rules.
+
 - Game IDs: preserve verified nflverse game IDs as strings. Player IDs: use GSIS
   strings where verified. Team IDs: a versioned canonical abbreviation mapping.
   Preserve source IDs alongside canonical IDs and explicitly map aliases. No names

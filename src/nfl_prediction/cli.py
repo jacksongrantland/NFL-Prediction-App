@@ -12,6 +12,48 @@ from nfl_prediction.settings import Settings
 app = typer.Typer(help="Local NFL prediction tools.")
 
 
+@app.command()
+def ingest(
+    season: list[int] | None = typer.Option(None, "--season", min=1999, max=2100),
+    current_season: int | None = typer.Option(None, min=2006, max=2100),
+    data_dir: Path = typer.Option(Path("data")),
+    force_refresh: bool = typer.Option(False),
+) -> None:
+    """Ingest six completed seasons plus the current season; --season selects a smoke run."""
+    import json
+
+    from nfl_prediction.data.ingest import run_ingestion
+
+    if current_season is None:
+        now = datetime.now(UTC)
+        current_season = now.year - (now.month < 3)
+    seasons = season or list(range(current_season - 6, current_season + 1))
+    if max(seasons) > current_season:
+        raise typer.BadParameter("Cannot ingest a future NFL season.")
+    try:
+        report = run_ingestion(
+            seasons, data_dir, current_season=current_season, force_refresh=force_refresh
+        )
+    except (ValueError, OSError, RuntimeError) as error:
+        typer.echo(f"Ingestion failed; prior published snapshots retained: {error}", err=True)
+        raise typer.Exit(1) from error
+    typer.echo(json.dumps(report, indent=2))
+
+
+@app.command("data-counts")
+def data_counts(season: int, data_dir: Path = typer.Option(Path("data"))) -> None:
+    """Query the published season snapshot with an in-memory DuckDB connection."""
+    import json
+
+    from nfl_prediction.storage.analytics import season_counts
+
+    try:
+        typer.echo(json.dumps(season_counts(data_dir, season), indent=2))
+    except (ValueError, OSError) as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(1) from error
+
+
 @app.command("audit-sources")
 def audit_sources(
     current_season: int | None = typer.Option(None, min=2006, max=2100),

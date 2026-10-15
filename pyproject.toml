@@ -7,7 +7,18 @@ name = "nfl-prediction"
 version = "0.1.0"
 description = "Local NFL prediction application"
 requires-python = ">=3.13,<3.14"
-dependencies = ["fastapi", "uvicorn", "pydantic-settings", "typer"]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic-settings",
+    "typer",
+    "pandas>=3.0.6",
+    "pyarrow>=26.0.0",
+    "duckdb>=1.5.6",
+    "sqlalchemy>=2.1.4",
+    "alembic>=1.20.0",
+    "tzdata>=2026.5",
+]
 
 [project.scripts]
 nfl = "nfl_prediction.cli:app"

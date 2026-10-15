@@ -82,8 +82,8 @@ Suggested commit: `chore: bootstrap local NFL prediction app and architecture`
 
 ## Prompt 02 — Free source audit and contracts
 
-Completed October 14, 2026 (America/Chicago); awaiting user review and commit.
-Stop here until the user resumes. The dated evidence uses October 15 UTC retrieval
+Completed October 14, 2026 (America/Chicago); user committed as `f6aef9c` and
+authorized Prompt 03. The dated evidence uses October 15 UTC retrieval
 timestamps, which are still October 14 locally.
 
 ### Changes and findings
@@ -145,3 +145,129 @@ normalized Parquet, SQLite migrations, DuckDB queries, repeatability and coverag
 validation. Continue without requiring optional injury timestamps; retain gaps.
 
 Suggested commit: `docs: audit free NFL sources and define data contracts`
+
+## Prompt 03 — Historical ingestion and storage
+
+Completed October 14, 2026 (America/Chicago). Awaiting user review and commit;
+do not proceed to Prompt 04 until the user resumes.
+
+### Changes
+
+- Added direct verified schedule CSV and season/weekly roster, player/team stats,
+  and PBP Parquet adapters. Only selected PBP/stat columns enter normalized tables;
+  original full downloads remain immutable with SHA-256 lineage.
+- Added `nfl ingest` (default six completed seasons plus current season), repeated
+  `--season` selection for smoke/subset runs, `--force-refresh`, and `nfl data-counts`.
+- Added checksum-verified URL caching, conditional requests for schedules/current
+  sources, bounded retries/timeouts, and explicit size limits. New source bytes
+  retain prior versions; unchanged source/normalization inputs reuse snapshots.
+- Added canonical IDs, original team labels, alias normalization, UTC kickoff
+  conversion, game-type preservation, type/count checks, duplicate checks, and
+  cross-source game/team/week/result reconciliation. Historical trades retain
+  their game-time team. Unknown IDs are never invented.
+- Added separate rejection Parquet files for unresolved GSIS IDs. Full-file
+  validation discovered blank/missing IDs not visible in the earlier prefix probes.
+  Initial smoke attempts correctly failed before any publication; handling was
+  refined to preserve and explicitly report these unresolved rows.
+- Added normalized Parquet snapshots, full output checksums, null/coverage reports,
+  SQLAlchemy-backed SQLite ingestion metadata and Alembic migration 0001, and
+  ephemeral DuckDB queries over published Parquet. No duplicated authoritative
+  analytical data is stored in SQLite or a persistent DuckDB database.
+- Added an OS ingestion lock and all-season publication transaction. Source errors,
+  partial downloads, conflicting records or interrupted runs cannot select a
+  half-written normalized snapshot. Prepared unpublished data is recoverable.
+- Added generated, explicitly synthetic offline fixtures and operations/recovery
+  documentation. Real data and local databases remain ignored in Git.
+
+### Real coverage
+
+All seven published seasons have 32 teams in team statistics. Counts below are
+from real files, independently checked through DuckDB against published snapshots.
+
+| Season | Completed games | Schedule rows | Player rows | Team rows | PBP rows | Season roster rows | Weekly roster rows |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 2020 | 269 | 269 | 17,581 | 538 | 47,705 | 3,067 | 44,124 |
+| 2021 | 285 | 285 | 18,947 | 570 | 49,922 | 2,960 | 46,670 |
+| 2022 | 284 | 284 | 18,809 | 568 | 49,434 | 3,133 | 46,136 |
+| 2023 | 285 | 285 | 18,621 | 570 | 49,665 | 3,089 | 45,650 |
+| 2024 | 285 | 285 | 18,961 | 570 | 49,492 | 3,215 | 46,572 |
+| 2025 | 285 | 285 | 19,400 | 570 | 48,771 | 3,133 | 46,820 |
+| 2026 | 79 | 272 | 5,501 | 158 | 13,842 | 3,040 | 15,307 |
+
+Total: **1,772 completed games**, 117,820 identified-player stat rows and 308,831
+PBP rows. The 193 remaining 2026 schedule rows have no recorded result and do not
+enter play/stat training data. No scored-but-unfinalized games were found in this
+run. Every completed game had a unique END_GAME marker and matching schedule/PBP
+scores, including overtime endings with clock remaining. No duplicate records or
+schema changes from the audited column baseline were found.
+
+Unresolved-ID rejection counts (not silently dropped or assigned fake identities):
+
+| Season | Season roster | Weekly roster | Player stats |
+|---|---:|---:|---:|
+| 2020 | 1 | 6 | 21 |
+| 2021 | 1 | 26 | 22 |
+| 2022 | 1 | 27 | 22 |
+| 2023 | 1 | 5 | 22 |
+| 2024 | 1 | 7 | 22 |
+| 2025 | 4 | 29 | 22 |
+| 2026 | 1 | 7 | 5 |
+
+Observed players with multiple historical game teams: 49, 75, 69, 61, 75, 88, and
+0 respectively. These are coverage observations, not a validated transaction log.
+Per-column missingness, all week/type/team coverage, snapshot fingerprints and
+measured run reports are in `docs/ingestion_verification_2026-10-14.json`.
+
+### Verification and measured costs
+
+- `py -3.13 -m uv add pandas pyarrow duckdb sqlalchemy alembic tzdata` resolved
+  and installed stable compatible releases and updated uv.lock. Versions: pandas
+  3.0.6, PyArrow 26.0.0, DuckDB 1.5.6, SQLAlchemy 2.1.4, Alembic 1.20.0,
+  tzdata 2026.5 (IANA timezone support on Windows).
+- `.\.venv\Scripts\nfl.exe ingest --season 2025 --current-season 2026`:
+  smoke run passed with 285 reconciled games after rejection handling; successful
+  cached-source run took 1.070 seconds. This is not a cold-download timing.
+- `.\.venv\Scripts\nfl.exe ingest --current-season 2026`: first full expansion
+  passed in 26.829 seconds, downloading 120,607,965 bytes in addition to already
+  cached 2025 smoke sources. Final validation pass from cached sources took
+  7.438 seconds with zero downloaded bytes after completion checks were tightened.
+- Repeated identical full command: **1.697 seconds**, zero downloaded bytes,
+  30 historical cache hits and 6 HTTP revalidations. All seven snapshot IDs were
+  identical and reused; no duplicate normalized snapshot was created.
+- `.\.venv\Scripts\nfl.exe data-counts 2025` and `... data-counts 2026`: passed;
+  an additional independent verification queried all seven seasons through DuckDB
+  and matched every dataset count to its publication summary. Alembic revision 0001.
+- Local data storage at final verification: **166,866,570 bytes (~159 MiB)**,
+  including raw downloads, retained earlier validation snapshots, reports and
+  metadata. This excludes installed dependencies. No versions were deleted to
+  reduce the measurement; SQLite sizes may change slightly after checkpoints.
+- `.\.venv\Scripts\ruff.exe check .` and `... ruff.exe format --check .`: passed.
+- `.\.venv\Scripts\python.exe -m pytest`: **23 passed**. Tests cover complete-run
+  publication atomicity, identical reruns, source corrections and old snapshots,
+  changed schedules and per-season reuse, missing IDs, aliases, conflicting keys,
+  timezone conversion, overtime/finality evidence, checksum corruption, conditional
+  requests/force refresh, retries, partial downloads and concurrent-run locking,
+  alongside the existing health/audit/manifest tests.
+- `git diff --check`: passed. No frontend changes required a new frontend build.
+  No commit, push, publication, or scheduled task was performed.
+
+### Limits and next stage
+
+Data ingestion is usable; forecasting is not implemented. Schedule completion is
+derived from cross-checked terminal PBP evidence, not a separate authoritative
+final-status API. This source omits preseason and does not expose an authoritative
+cancellation feed. It must not fabricate missing games or cancellation records.
+Current rosters are observations, not proof of historical pregame membership;
+corrected historical statistics still cannot prove original publication times.
+Source manifests intentionally retain conservative coverage and null historical
+availability; normalized coverage validation does not invent that timing.
+
+Optional snaps and injuries are not ingested here. Source redistribution review
+items from Prompt 02 remain in force. Incremental refresh is at source/season
+level; historical corrected files require explicit `--force-refresh`. Interrupted
+staging artifacts can remain unselected for later inspection. Backup is manual.
+
+Prompt 04 is next: prospective pregame schedule/roster/injury snapshots, cutoff-aware
+queries, structured availability tracking and the validated manual injury import.
+
+Suggested commit: `feat(data): ingest and validate historical NFL datasets`

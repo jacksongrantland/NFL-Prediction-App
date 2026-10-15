@@ -1,9 +1,9 @@
 # Architecture
 
 A single local repository contains a Python prediction engine/API and a React,
-TypeScript, Vite frontend. Bootstrap and bounded source discovery exist today.
-No ingestion adapters, predictions, models, scheduled jobs, fantasy tools, or
-betting tools exist yet.
+TypeScript, Vite frontend. Bootstrap, source discovery, and historical ingestion
+exist today. No predictions, models, scheduled jobs, fantasy tools, or betting
+tools exist yet.
 
 ## Current modules
 
@@ -12,6 +12,11 @@ betting tools exist yet.
 - `api/app.py`: typed read-only health endpoint at `/api/health`.
 - `data/audit.py`: bounded public-source metadata and sample probes, without ingestion.
 - `data/manifests.py`: validated source-lineage and historical-availability contract.
+- `data/downloads.py`: immutable full downloads, caching, retry and integrity checks.
+- `data/normalize.py`: explicit type/ID/alias mappings and cross-source reconciliation.
+- `data/ingest.py`: single-writer orchestration and immutable snapshot preparation.
+- `storage/database.py` and packaged Alembic migrations: SQLite run/cache/publication metadata.
+- `storage/analytics.py`: in-memory DuckDB reads of published Parquet snapshots.
 - `frontend/src`: connection dashboard with loading, success, failure, and retry states.
 - `scripts`: development and verification commands for PowerShell.
 
@@ -20,13 +25,14 @@ preview use this proxy. The API defaults to 127.0.0.1:8000. There are no mutatio
 routes or authentication in this stage. Hosting and multi-user access are deferred.
 If NFL_PORT changes, update the Vite proxy target to match.
 
-## Planned storage ownership
+## Storage ownership
 
 - Immutable raw downloads and normalized versioned Parquet own analytical datasets
   and source lineage under ignored `data/` paths.
 - DuckDB queries Parquet; it does not own a competing copy of operational entities.
-- SQLite will own ingestion metadata, snapshot references, forecast versions/locks,
-  result revisions, rosters entered by the user, and the virtual credit ledger.
+- SQLite owns ingestion metadata, cache/source-manifest references, immutable
+  snapshot catalog and active season pointers. Future stages add forecast locks,
+  result revisions, user roster entry and the virtual credit ledger.
 - Ignored `artifacts/` stores models and evaluation outputs; manifests link artifacts
   to data hashes and dependency versions.
 
@@ -38,7 +44,10 @@ libraries and migrations arrive only when their stages need them.
 
 The CLI will orchestrate data, feature, model, simulation, and reconciliation modules.
 `nfl audit-sources` writes metadata/header evidence; it never populates operational
-stores. Download adapters are the next stage. The repository-root `/data/` is
+stores. `nfl ingest` loads verified schedule, season/weekly roster, player/team stat,
+and selected PBP sources. It validates complete snapshot directories before one
+SQLite transaction publishes every requested season. See operations.md for exact
+atomicity, cache/recovery policy and completion evidence. The repository-root `/data/` is
 ignored, while `src/nfl_prediction/data/` is tracked application code.
 
 API handlers stay thin and never train models or download large datasets. CPU
