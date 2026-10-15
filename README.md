@@ -1,6 +1,6 @@
 # NFL Prediction App
 
-Local Windows NFL prediction project, currently through Prompt 04 (pregame observations).
+Local Windows NFL prediction project, currently through Prompt 05 (features and evaluation harness).
 The dashboard displays API connection health. Real 2020–2026 data can be downloaded
 and validated with the CLI; the dashboard does not display it yet. No models or
 predictions exist. Follow the numbered roadmap one stage at a time.
@@ -14,7 +14,17 @@ Pregame schedule/roster/injury observations:
 
 Choose a cutoff after your own capture; earlier queries correctly show missing
 data. See [snapshot commands, manual CSV and timestamp policy](docs/pregame_snapshots.md).
-No injury probability or prediction model exists yet. Prompt 05 is next.
+No injury probability or prediction model exists yet. Feature preparation:
+
+```powershell
+.\.venv\Scripts\nfl.exe build-features --smoke --output artifacts/features-smoke
+.\.venv\Scripts\nfl.exe build-features --output artifacts/features-full
+.\.venv\Scripts\nfl.exe check-backtest artifacts/features-full/FEATURE_ID
+```
+
+Use the emitted FEATURE_ID directory. See [feature policies](docs/modeling.md) and
+[chronological evaluation](docs/evaluation.md). Historical inputs are explicitly
+approximate; the latest completed season is reserved for final model evaluation.
 
 Source discovery is available through:
 
@@ -101,5 +111,5 @@ See [architecture](docs/architecture.md), [contracts](docs/data_contracts.md),
 and [progress](docs/progress.md). Dependencies for data/model stages will be added
 when needed. No Docker, CUDA, database server, paid feeds, or hosting are required.
 
-The user reviews and commits each stage. Nothing is automatically committed,
-pushed, published, or scheduled.
+The user authorized local commits after verified prompt checkpoints. Changes are
+never pushed, published, or scheduled automatically.

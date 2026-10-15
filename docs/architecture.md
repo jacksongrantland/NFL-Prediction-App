@@ -19,6 +19,8 @@ local cutoff queries; see `pregame_snapshots.md` for selection policies.
 - `data/normalize.py`: explicit type/ID/alias mappings and cross-source reconciliation.
 - `data/ingest.py`: single-writer orchestration and immutable snapshot preparation.
 - `data/snapshots.py`: captures, manual availability validation and as-of reads.
+- `features/pipeline.py`: weekly frozen team/player features and source eligibility.
+- `evaluation/harness.py`: expanding season folds and training-only preprocessing.
 - `storage/database.py` and packaged Alembic migrations: SQLite run/cache/publication metadata.
 - `storage/analytics.py`: in-memory DuckDB reads of published Parquet snapshots.
 - `frontend/src`: connection dashboard with loading, success, failure, and retry states.

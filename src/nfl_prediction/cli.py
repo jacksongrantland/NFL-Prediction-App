@@ -12,6 +12,40 @@ from nfl_prediction.settings import Settings
 app = typer.Typer(help="Local NFL prediction tools.")
 
 
+@app.command("build-features")
+def build_features(
+    data_dir: Path = typer.Option(Path("data")),
+    output: Path = typer.Option(Path("artifacts/features")),
+    smoke: bool = typer.Option(False),
+) -> None:
+    """Prepare weekly cutoff-aware features and train/validation/test manifests."""
+    import json
+
+    from nfl_prediction.features.pipeline import prepare
+
+    try:
+        seasons = None
+        if smoke:
+            from nfl_prediction.features.pipeline import load_history
+
+            _, lineage = load_history(data_dir)
+            seasons = sorted(map(int, lineage))[-4:]
+        typer.echo(json.dumps(prepare(data_dir, output, seasons=seasons), indent=2))
+    except (ValueError, OSError, RuntimeError) as error:
+        typer.echo(f"Feature preparation failed: {error}", err=True)
+        raise typer.Exit(1) from error
+
+
+@app.command("check-backtest")
+def check_backtest(path: Path) -> None:
+    """Validate chronological folds and training-only preprocessing without scoring test data."""
+    import json
+
+    from nfl_prediction.evaluation.harness import check_folds
+
+    typer.echo(json.dumps(check_folds(path), indent=2))
+
+
 @app.command("capture-pregame")
 def capture_pregame(
     season: int = typer.Option(..., min=1999, max=2100),

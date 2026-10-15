@@ -1,0 +1,11 @@
+{
+  "version": "features/1",
+  "history_games": 16,
+  "half_life_games": 5.0,
+  "prior_games": 4.0,
+  "completion_delay_hours": 12,
+  "default_team_points": 21.0,
+  "default_rest_days": 7.0,
+  "positions": ["QB", "RB", "WR", "TE"],
+  "stats": ["attempts", "completions", "passing_yards", "passing_tds", "passing_interceptions", "carries", "rushing_yards", "rushing_tds", "targets", "receptions", "receiving_yards", "receiving_tds"]
+}

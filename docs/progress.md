@@ -354,3 +354,60 @@ refresh schedule exists yet. Prompt 05 is next: cutoff-aware features and
 chronological evaluation. Stop here pending user review; do not start Prompt 05.
 
 Suggested commit: `feat(data): add pregame observation history and harden ingestion`
+
+## Prompt 05 — Cutoff-aware features and chronological evaluation
+
+Completed October 15, 2026 (America/Chicago). The user authorized working through
+the remaining prompts and making a local commit after each completed checkpoint.
+AGENTS.md records that override; remote publication remains prohibited.
+
+Added versioned config/features.json, weekly frozen team scoring/conceding/rest
+features, lagged QB/RB/WR/TE workload/production, prior-position shrinkage,
+historical weekly roster membership, trade context, opponent/home-away inputs,
+and explicit availability/role uncertainty. Available injury inputs require local
+observation and recording by cutoff and retain batch/timestamp references.
+No model was fitted or final-test metric inspected for this checkpoint.
+
+Complete season/week groups share their earliest kickoff as cutoff. Only final
+reconciled games with kickoff + 12 hours before cutoff contribute. This is an
+explicit approximation because observed game-end timestamps and original source
+publication histories are unavailable. Future outcomes cannot affect earlier
+features. No career history is invented for rookies or missing identities.
+
+Added expanding earlier-season training/validation manifests, latest eligible
+completed season 2025 reserved as final test, all current-season rows excluded
+from tuning/test, and training-only imputation/scaling checks. Player rows inherit
+their complete game's partition. Artifacts contain source snapshots, definitions,
+checksums, code identity, eligibility counts and split manifests. They remain ignored.
+
+Verification from repository root:
+
+- `nfl build-features --output artifacts/features-verified`: 51.829 seconds,
+  1,965 game rows and 89,897 player rows from 2020–2026. Feature ID
+  b25b87e6f7fa843952b65ef3d67e2589a727a6a83c339e4522b5858114ceed39.
+- `nfl build-features --smoke --output artifacts/features-smoke-verified`:
+  22.840 seconds, 1,127 game rows and 47,315 player rows from 2023–2026.
+  Early development runs took 295–643 seconds; vectorized player stats and indexed
+  historical roster lookups reduced the final implementation's measured runtime.
+  Some development benchmarks overlapped; these are local observations, not limits.
+- `nfl check-backtest artifacts/features-verified/b25b87e6f7fa843952b65ef3d67e2589a727a6a83c339e4522b5858114ceed39`:
+  passed in 0.149 seconds, validation seasons 2021–2024 (285/284/285/285 games),
+  final 2025 test untouched. Smoke harness also passed (2024 validation).
+- `.\.venv\Scripts\python.exe -m pytest --ignore=tests/test_game_models.py`:
+  51 passed (16.32 seconds), including future-outcome invariance, shifted features,
+  historical trades, finality exclusions and training-only preprocessing. The
+  explicitly ignored test file is independent Prompt 06 work, not part of this commit.
+- Ruff lint and formatting checks passed; git diff --check passed.
+- Installed/locked scikit-learn 1.9.1 with compatible CPU dependencies through uv.
+  Package installation required approved access to the system Python/network.
+
+All historical rows remain approximate corrected-source inputs; strict historical
+row count is zero. No locally eligible injury batches matched these historical
+weekly player features. Missing injury context remains unknown. Weekly rosters
+are not verified active lists. The first available season has cold-start priors;
+out-of-sample feature availability is not proof of prediction quality.
+
+Prompt 06 is next: baseline comparisons, versioned game models and a single final
+2025 evaluation after selection. No push, publication or scheduled task occurred.
+
+Commit: `feat(ml): add cutoff-aware features and chronological evaluation`

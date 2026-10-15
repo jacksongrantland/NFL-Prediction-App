@@ -18,6 +18,9 @@ target important behavior, especially leakage, timestamps, aggregation, and ledg
 If a source is missing, preserve useful independent progress and record the blocker.
 Do not claim blocked stages are complete. Ask only questions that block material choices.
 
-The user commits. Never commit, push, or publish automatically. At each completed
-stage, stop and send the suggested conventional commit message in chat. Wait for
-the user before starting the next stage.
+The user explicitly authorized continuing through the remaining numbered prompts
+and creating a local commit after each completed prompt on October 15, 2026.
+Verify and document each checkpoint before committing, then continue to the next.
+Never push, create a remote, publish, purchase services or install scheduled tasks
+without separate explicit authorization. Preserve unrelated changes and do not
+claim a stage complete when required work remains.

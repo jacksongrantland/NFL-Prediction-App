@@ -18,6 +18,7 @@ dependencies = [
     "sqlalchemy>=2.1.4",
     "alembic>=1.20.0",
     "tzdata>=2026.5",
+    "scikit-learn>=1.9.1",
 ]
 
 [project.scripts]
