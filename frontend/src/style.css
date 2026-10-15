@@ -1,0 +1,13 @@
+:root { font-family: system-ui, sans-serif; color: #e7edf6; background: #0b1423; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 880px; margin: 0 auto; padding: 80px 24px; }
+.eyebrow { font-size: .8rem; letter-spacing: .18em; color: #84b8ec; }
+h1 { font-size: clamp(2.3rem, 7vw, 4rem); line-height: 1.08; max-width: 700px; }
+.intro { font-size: 1.2rem; color: #b5c3d5; }
+section { margin-top: 40px; padding: 24px; background: #142238; border: 1px solid #2e4562; border-radius: 16px; }
+h2 { font-size: 1.1rem; margin-top: 0; }
+.connected { color: #81e4b5; font-weight: 600; }
+.note { color: #b5c3d5; font-size: .9rem; margin-top: 24px; }
+button { padding: 10px 16px; border: 1px solid #84b8ec; border-radius: 8px; background: #1c3555; color: #fff; cursor: pointer; }
+button:focus-visible { outline: 3px solid #81e4b5; outline-offset: 3px; }
