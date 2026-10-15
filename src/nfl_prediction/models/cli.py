@@ -34,3 +34,37 @@ def promote_games(model: Path) -> None:
     from nfl_prediction.models.games import promote
 
     typer.echo(json.dumps(promote(model), indent=2))
+
+
+@app.command("offense-baselines")
+def offense_baselines(
+    features: Path,
+    participation: Path,
+    data_dir: Path = typer.Option(Path("data")),
+    output: Path = typer.Option(Path("artifacts/players")),
+) -> None:
+    """Evaluate explicit participation/opportunity baselines; missing stays unknown."""
+    from nfl_prediction.models.players import run
+
+    report = run(features, participation, data_dir, output)
+    from nfl_prediction.models.player_io import load_manifest
+
+    load_manifest(Path(report["path"]))
+    typer.echo(
+        json.dumps(
+            {
+                key: value
+                for key, value in report.items()
+                if key not in ("validation", "final_test")
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("preview-players")
+def preview_players(model: Path, game_id: str) -> None:
+    """Inspect an unpromoted baseline; missing roster games remain unsupported."""
+    from nfl_prediction.models.player_io import preview
+
+    typer.echo(json.dumps(preview(model, game_id), indent=2))

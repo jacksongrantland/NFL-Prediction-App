@@ -1,5 +1,9 @@
 # Free source audit
 
+Prompt 07's additional full snap-count/GSIS coverage audit and conservative
+participation rules are documented in `participation_and_offense.md`. Its results
+do not imply complete historical identity coverage or original pregame availability.
+
 Audited October 14, 2026 (America/Chicago). Machine evidence is in
 [`source_audit_2026-10-14.json`](source_audit_2026-10-14.json). Its UTC retrieval
 times fall on October 15. This is a source audit, not ingestion or model validation.

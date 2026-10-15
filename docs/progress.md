@@ -477,3 +477,72 @@ Prompt 07 is next: supported offensive player participation/opportunity/producti
 with honest coverage and availability limitations.
 
 Commit: `feat(ml): train and evaluate versioned game prediction models`
+
+## Prompt 07 — Participation audit and offensive baseline checkpoint (in progress)
+
+October 15, 2026 (America/Chicago), after Prompt 06 commit 106120e. This is a
+coherent smaller checkpoint permitted by the roadmap, **not completion of Prompt
+07**. No production player model is promoted. Prompt 08 has not started.
+
+Added a reproducible free nflverse snap-count audit with exact PFR-to-GSIS mapping,
+conservative team snap-denominator checks, source manifests/checksums and atomic
+normalized publication. Unverified absences remain unknown. Present offensive
+participation and missing actual statistics are kept separate. Positive snap/stat
+contradictions are excluded before forecasting rather than treated as zeros.
+
+Added baseline participation probabilities from only prior known labels, prior
+position shrinkage, forecast team opportunity volume, player opportunity shares
+and production-per-opportunity. Active-on-offense conditional and unconditional
+statistics are distinct, with empirical uncertainty ranges. Confirmed Out/inactive
+inputs redistribute opportunities; questionable adds no invented coefficient.
+Other-player opportunities, unknown roles/availability, unsupported cold starts and
+participation/no-participation scenarios remain explicit. No learned injury or
+player-production coefficients were invented. Source/feature/participation lineage
+and validation residuals are saved in ignored artifacts. Preview checks hashes,
+labels itself experimental/unpublished and sets recommended_for_decisions false.
+
+### Verification and measured findings
+
+- `nfl audit-participation`: real 2020–2026 snap Parquet files audited. Normalized
+  participation ID 2a636a1923687bc8e9689c8249a3cb39e22e57c67e23dff30203341922bc9b91.
+  Required source downloads/revalidation used approved network access. Team-games
+  passing all conservative checks: 2020 194/538, 2021 233/570, 2022 25/568,
+  2023 303/570, 2024 248/570, 2025 512/570, 2026 134/158. Many PFR rows lack
+  a verified GSIS mapping; no name matches were used to hide these gaps.
+- `nfl models offense-baselines artifacts/features-verified/b25b87e6f7fa843952b65ef3d67e2589a727a6a83c339e4522b5858114ceed39 data/participation/2a636a1923687bc8e9689c8249a3cb39e22e57c67e23dff30203341922bc9b91`:
+  passed in 40.317 seconds internally, produced 89,897 projection rows, 41,822 known
+  participation labels and 48,075 unknown. Positive-snap/missing-actual rows: 4,573;
+  snap/stat contradictions excluded: eight. This is incomplete selected coverage.
+- Fixed opportunity model ID:
+  286d0d0f05f570b8d6e5d60c645232aa92bfb8e8fafc6e69e6fb9fdd52716b5a.
+  Earlier validation seasons 2021–2024; 2025 experimental test recorded once.
+  QB passing-yard MAE 122.864 versus lag comparator 73.169 (n=704), RB rushing
+  21.103 versus 20.116 (n=1,806), WR receiving 22.047 versus 21.677 (n=2,644),
+  TE receiving 15.886 versus 15.394 (n=1,391). The experiment underpredicts and
+  is worse than the simpler comparator. It remains an unpromoted candidate.
+- Participation test Brier 0.04315 on 7,342 eligible rows; selected coverage means
+  this is not a full-roster estimate. Per-position/stat/workload MAE/bias and 80%
+  interval coverage are saved, along with separate validation residuals. Small
+  dated evidence: docs/offense_baseline_verification_2026-10-15.json.
+- Real CLI preview for 2026_06_ARI_LA returned 47 explicitly experimental rows with
+  availability scenarios. Unsupported roster/game queries stay explicit.
+- New synthetic tests verify coverage-gated zero labels, ambiguous IDs, invalid
+  counts, future-participation invariance, known-Out redistribution, unchanged
+  questionable probabilities, signed yardage, opportunity conservation and missing
+  actuals excluded rather than scored as zero.
+- `.\.venv\Scripts\python.exe -m pytest`: 64 passed (17.66 seconds). Ruff lint
+  and format checks passed (49 Python files); git diff --check passed. No frontend
+  source changed. The browser remains the health screen from earlier stages.
+
+### Next unfinished work
+
+Finish Prompt 07: retain the simpler forecast where earlier validation favors it,
+establish a defensible default, resolve/represent depth-role allocation, and validate
+opponent-conditioned inputs where supported. The current experiment can allocate
+too much volume to backups. Do not promote it or claim full player coverage.
+Do not tune repeatedly against the already observed 2025 experimental test; preserve
+it and declare new prospective evaluation eligibility for future model work.
+No Prompt 08 simulation, dashboard changes, fantasy, wagering, push, publication,
+paid source or Windows scheduled task was implemented in this checkpoint.
+
+Checkpoint commit: `feat(ml): audit participation and evaluate offensive baselines`

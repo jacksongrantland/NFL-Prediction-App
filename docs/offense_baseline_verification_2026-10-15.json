@@ -1,0 +1,353 @@
+{
+  "player_model_id": "286d0d0f05f570b8d6e5d60c645232aa92bfb8e8fafc6e69e6fb9fdd52716b5a",
+  "kind": "opportunity_participation_baseline",
+  "feature_id": "b25b87e6f7fa843952b65ef3d67e2589a727a6a83c339e4522b5858114ceed39",
+  "participation_id": "2a636a1923687bc8e9689c8249a3cb39e22e57c67e23dff30203341922bc9b91",
+  "projection_rows": 89897,
+  "known_participation_rows": 41822,
+  "unknown_participation_rows": 48075,
+  "missing_actual_stat_rows_despite_positive_snaps": 4573,
+  "contradictory_snap_stat_rows": 8,
+  "participation_final_test": {
+    "n": 7342,
+    "brier": 0.043153165901348
+  },
+  "elapsed_seconds": 40.317,
+  "promotion_status": "baseline_candidate",
+  "source_coverage": [
+    {
+      "season": 2020,
+      "snap_rows": 24999,
+      "unmapped_pfr_rows": 8990,
+      "team_games": 538,
+      "verified_team_games": 194,
+      "denominator_policy": "11 * maximum snaps; consistent percentages; mapped skill participants; reconciled final context and positive-stat coverage",
+      "eligibility": "approximate_corrected_sources; unverified absences are unknown"
+    },
+    {
+      "season": 2021,
+      "snap_rows": 26468,
+      "unmapped_pfr_rows": 9506,
+      "team_games": 570,
+      "verified_team_games": 233,
+      "denominator_policy": "11 * maximum snaps; consistent percentages; mapped skill participants; reconciled final context and positive-stat coverage",
+      "eligibility": "approximate_corrected_sources; unverified absences are unknown"
+    },
+    {
+      "season": 2022,
+      "snap_rows": 26381,
+      "unmapped_pfr_rows": 12221,
+      "team_games": 568,
+      "verified_team_games": 25,
+      "denominator_policy": "11 * maximum snaps; consistent percentages; mapped skill participants; reconciled final context and positive-stat coverage",
+      "eligibility": "approximate_corrected_sources; unverified absences are unknown"
+    },
+    {
+      "season": 2023,
+      "snap_rows": 26540,
+      "unmapped_pfr_rows": 7623,
+      "team_games": 570,
+      "verified_team_games": 303,
+      "denominator_policy": "11 * maximum snaps; consistent percentages; mapped skill participants; reconciled final context and positive-stat coverage",
+      "eligibility": "approximate_corrected_sources; unverified absences are unknown"
+    },
+    {
+      "season": 2024,
+      "snap_rows": 26615,
+      "unmapped_pfr_rows": 8215,
+      "team_games": 570,
+      "verified_team_games": 248,
+      "denominator_policy": "11 * maximum snaps; consistent percentages; mapped skill participants; reconciled final context and positive-stat coverage",
+      "eligibility": "approximate_corrected_sources; unverified absences are unknown"
+    },
+    {
+      "season": 2025,
+      "snap_rows": 26613,
+      "unmapped_pfr_rows": 5020,
+      "team_games": 570,
+      "verified_team_games": 512,
+      "denominator_policy": "11 * maximum snaps; consistent percentages; mapped skill participants; reconciled final context and positive-stat coverage",
+      "eligibility": "approximate_corrected_sources; unverified absences are unknown"
+    },
+    {
+      "season": 2026,
+      "snap_rows": 7370,
+      "unmapped_pfr_rows": 1375,
+      "team_games": 158,
+      "verified_team_games": 134,
+      "denominator_policy": "11 * maximum snaps; consistent percentages; mapped skill participants; reconciled final context and positive-stat coverage",
+      "eligibility": "approximate_corrected_sources; unverified absences are unknown"
+    }
+  ],
+  "validation": [
+    {
+      "season": 2021,
+      "selected_metrics": [
+        {
+          "position": "QB",
+          "mode": "unconditional",
+          "stat": "passing_yards",
+          "n": 663,
+          "mae": 137.51063242715807,
+          "bias": -123.42100502472373,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 71.80785387073784,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8355957767722474
+        },
+        {
+          "position": "RB",
+          "mode": "unconditional",
+          "stat": "rushing_yards",
+          "n": 1682,
+          "mae": 22.007717161323185,
+          "bias": -15.032630176752,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 20.763204963192724,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8109393579072532
+        },
+        {
+          "position": "TE",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 1182,
+          "mae": 17.618623668627006,
+          "bias": -12.123570327404938,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 16.926365262179882,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8138747884940778
+        },
+        {
+          "position": "WR",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 2505,
+          "mae": 24.908756558866724,
+          "bias": -17.422244738841663,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 23.38058367468203,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8279441117764471
+        }
+      ]
+    },
+    {
+      "season": 2022,
+      "selected_metrics": [
+        {
+          "position": "QB",
+          "mode": "unconditional",
+          "stat": "passing_yards",
+          "n": 578,
+          "mae": 135.55055958597345,
+          "bias": -126.7198755724834,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 64.60340361782245,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8633217993079585
+        },
+        {
+          "position": "RB",
+          "mode": "unconditional",
+          "stat": "rushing_yards",
+          "n": 1409,
+          "mae": 22.160190179141924,
+          "bias": -15.018508667049007,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 20.797995334988464,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8197303051809794
+        },
+        {
+          "position": "TE",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 960,
+          "mae": 17.486192119668818,
+          "bias": -12.298096011773646,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 16.518339390683373,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.815625
+        },
+        {
+          "position": "WR",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 2031,
+          "mae": 25.878531366630725,
+          "bias": -18.458438869761803,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 23.780577792341933,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8060068931560808
+        }
+      ]
+    },
+    {
+      "season": 2023,
+      "selected_metrics": [
+        {
+          "position": "QB",
+          "mode": "unconditional",
+          "stat": "passing_yards",
+          "n": 690,
+          "mae": 127.38555621661413,
+          "bias": -110.16295623356959,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 72.8749309998952,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8159420289855073
+        },
+        {
+          "position": "RB",
+          "mode": "unconditional",
+          "stat": "rushing_yards",
+          "n": 1641,
+          "mae": 21.500988604117694,
+          "bias": -14.202514918920063,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 20.142412144824362,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8031687995124924
+        },
+        {
+          "position": "TE",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 1193,
+          "mae": 17.165165475768056,
+          "bias": -11.540411978584045,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 16.24880727403769,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.7896060352053647
+        },
+        {
+          "position": "WR",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 2580,
+          "mae": 24.043628295332603,
+          "bias": -16.20677268952125,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 23.09843426148371,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8271317829457364
+        }
+      ]
+    },
+    {
+      "season": 2024,
+      "selected_metrics": [
+        {
+          "position": "QB",
+          "mode": "unconditional",
+          "stat": "passing_yards",
+          "n": 694,
+          "mae": 129.67814178794777,
+          "bias": -114.44476201314097,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 72.00122687725931,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8025936599423631
+        },
+        {
+          "position": "RB",
+          "mode": "unconditional",
+          "stat": "rushing_yards",
+          "n": 1658,
+          "mae": 22.587964802447733,
+          "bias": -15.543944641496571,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 20.986567945980347,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.7919179734620024
+        },
+        {
+          "position": "TE",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 1237,
+          "mae": 17.189324900670382,
+          "bias": -11.524856520661709,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 16.68520586639133,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.7987065481002426
+        },
+        {
+          "position": "WR",
+          "mode": "unconditional",
+          "stat": "receiving_yards",
+          "n": 2406,
+          "mae": 24.67204672821811,
+          "bias": -17.170853859737043,
+          "workload_bucket": "all",
+          "lag_baseline_mae": 22.834278867757636,
+          "nominal_interval": 0.8,
+          "interval_coverage": 0.8154613466334164
+        }
+      ]
+    }
+  ],
+  "final_test_season": 2025,
+  "selected_final_metrics": [
+    {
+      "position": "QB",
+      "mode": "unconditional",
+      "stat": "passing_yards",
+      "n": 704,
+      "mae": 122.86377207574179,
+      "bias": -106.8807377094408,
+      "workload_bucket": "all",
+      "lag_baseline_mae": 73.16856120357292,
+      "nominal_interval": 0.8,
+      "interval_coverage": 0.8309659090909091
+    },
+    {
+      "position": "RB",
+      "mode": "unconditional",
+      "stat": "rushing_yards",
+      "n": 1806,
+      "mae": 21.103082439778092,
+      "bias": -13.965275662311232,
+      "workload_bucket": "all",
+      "lag_baseline_mae": 20.115580224178778,
+      "nominal_interval": 0.8,
+      "interval_coverage": 0.8211517165005537
+    },
+    {
+      "position": "TE",
+      "mode": "unconditional",
+      "stat": "receiving_yards",
+      "n": 1391,
+      "mae": 15.885747688880807,
+      "bias": -10.196791073276385,
+      "workload_bucket": "all",
+      "lag_baseline_mae": 15.393681068819209,
+      "nominal_interval": 0.8,
+      "interval_coverage": 0.8231488138030194
+    },
+    {
+      "position": "WR",
+      "mode": "unconditional",
+      "stat": "receiving_yards",
+      "n": 2644,
+      "mae": 22.047183820498955,
+      "bias": -13.774291364290955,
+      "workload_bucket": "all",
+      "lag_baseline_mae": 21.676969326238524,
+      "nominal_interval": 0.8,
+      "interval_coverage": 0.819213313161876
+    }
+  ],
+  "preview": {
+    "game_id": "2026_06_ARI_LA",
+    "rows": 47,
+    "status": "available",
+    "recommended_for_decisions": false
+  }
+}

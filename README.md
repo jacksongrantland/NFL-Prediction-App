@@ -1,10 +1,13 @@
 # NFL Prediction App
 
 Local Windows NFL prediction project, currently through Prompt 06 (evaluated game models).
+Prompt 07 has an [experimental offensive baseline checkpoint](docs/participation_and_offense.md);
+it is not complete or promoted for decisions.
 The dashboard displays API connection health. Real 2020–2026 data can be downloaded
 and validated with the CLI; the dashboard does not display it yet. Evaluated game
-models and unpublished scheduled-game previews exist. Player projections and
-official locked prediction history are not implemented yet.
+models and unpublished scheduled-game previews exist. Experimental offensive
+previews exist with explicit unknown/unsupported cases. Official locked prediction
+history and production player projections are not implemented yet.
 
 Pregame schedule/roster/injury observations:
 

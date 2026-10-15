@@ -23,6 +23,9 @@ local cutoff queries; see `pregame_snapshots.md` for selection policies.
 - `evaluation/harness.py`: expanding season folds and training-only preprocessing.
 - `models/games.py`: baselines, CPU model selection, registry and one-time holdout evaluation.
 - `models/cli.py`: explicit train/evaluate/promote/preview commands, separate from HTTP reads.
+- `data/participation.py`: optional snap identity/denominator audit; unknown absences stay unknown.
+- `models/players.py`: experimental causal participation/opportunity/production baselines.
+- `models/player_io.py`: integrity-checked, explicitly unpromoted player previews/scenarios.
 - `storage/database.py` and packaged Alembic migrations: SQLite run/cache/publication metadata.
 - `storage/analytics.py`: in-memory DuckDB reads of published Parquet snapshots.
 - `frontend/src`: connection dashboard with loading, success, failure, and retry states.

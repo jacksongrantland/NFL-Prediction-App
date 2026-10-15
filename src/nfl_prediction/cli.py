@@ -14,6 +14,19 @@ app = typer.Typer(help="Local NFL prediction tools.")
 app.add_typer(models_app, name="models")
 
 
+@app.command("audit-participation")
+def audit_participation(
+    data_dir: Path = typer.Option(Path("data")),
+    output: Path = typer.Option(Path("data/participation")),
+) -> None:
+    """Audit snap-count identity and offensive participation denominators."""
+    import json
+
+    from nfl_prediction.data.participation import audit
+
+    typer.echo(json.dumps(audit(data_dir, output), indent=2))
+
+
 @app.command("build-features")
 def build_features(
     data_dir: Path = typer.Option(Path("data")),
