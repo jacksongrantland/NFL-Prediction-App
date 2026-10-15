@@ -8,8 +8,8 @@ __pycache__/
 !.env.example
 node_modules/
 dist/
-data/
-artifacts/
+/data/
+/artifacts/
 *.sqlite*
 *.duckdb*
 *.parquet

@@ -1,8 +1,19 @@
 # NFL Prediction App
 
-Local Windows NFL prediction project, currently at Prompt 01 (bootstrap).
+Local Windows NFL prediction project, currently through Prompt 02 (source audit).
 The dashboard displays API connection health. No sports data or predictions are
 present yet. Follow the numbered roadmap one stage at a time.
+
+Source discovery is available through:
+
+```powershell
+.\.venv\Scripts\nfl.exe audit-sources --current-season 2026
+```
+
+It checks 2020–2026 release metadata and bounded samples, writing ignored
+`data/audits/source_audit.json`. See [source coverage and known gaps](docs/data_sources.md).
+The dated audit detects two injury timestamp schema gaps and exits 1; these are
+documented source limitations. This command does not ingest datasets or train models.
 
 ## Setup
 

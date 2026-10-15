@@ -2,8 +2,8 @@
 
 ## Prompt 01 — Bootstrap and architecture
 
-Completed October 14, 2026. Awaiting user review and commit. Do not start Prompt 02
-until the user resumes work.
+Completed October 14, 2026. User committed as `1c24de8`; the user subsequently
+authorized Prompt 02. Historical verification details follow.
 
 Created a new local Git repository in `nfl-prediction-app`, separate from the parent
 planning file. No commit, remote, push, publication, or scheduled task was created.
@@ -79,3 +79,69 @@ Prompt 02: audit free NFL data and define actual source contracts and availabili
 matrix. Probe small real artifacts and document attribution, timestamps, and gaps.
 
 Suggested commit: `chore: bootstrap local NFL prediction app and architecture`
+
+## Prompt 02 — Free source audit and contracts
+
+Completed October 14, 2026 (America/Chicago); awaiting user review and commit.
+Stop here until the user resumes. The dated evidence uses October 15 UTC retrieval
+timestamps, which are still October 14 locally.
+
+### Changes and findings
+
+- Added `nfl audit-sources`: metadata discovery for seven nflverse releases,
+  bounded CSV probes for 2020–2026, and one small schedule-file check. It does not
+  ingest historical datasets. No new dependencies or lockfile changes were needed.
+- Added dated JSON evidence and `docs/data_sources.md`: 49 annual CSV assets
+  present, plus schedule coverage for all seven seasons; 48/50 schema probes
+  verified. Injury 2025/2026 has no `date_modified`, so those two probes explicitly
+  report `schema_gap`. The command intentionally exits 1 when gaps are detected.
+- Current injury files do exist and have recent updates. Historical pregame
+  publication/revision timing remains unproven; current status presence is not a
+  promise of complete injury coverage. Defined prospective snapshots, validated
+  manual import fallback, and a no-injury baseline.
+- Schedules have no preseason rows. 2026 has 272 scheduled rows and 79 with both
+  scores recorded; scores alone do not establish the finalization contract.
+- Documented cadence, IDs/crosswalks, raw/normalized schemas, availability rules,
+  and dataset attribution/redistribution status. PFR provider terms could not be
+  verified (data-use page returned 403); nfldata schedule licensing and specific
+  upstream rights remain review items before redistribution.
+- Added validated `SourceManifest` and exported JSON Schema. Unknown publication
+  and availability times stay null. Prefix checksums cannot claim season coverage.
+- Anchored `/data/` and `/artifacts/` ignore rules to repository root so application
+  code under `src/nfl_prediction/data/` is tracked and linted. Downloads stay ignored.
+- Updated README and architecture. Parent planning document was not modified.
+
+### Verification
+
+- `.\.venv\Scripts\nfl.exe audit-sources --current-season 2026 --output docs/source_audit_2026-10-14.json`:
+  final live run completed in about 9 seconds with 48/50 verified and exit 1 for
+  the two documented optional injury timestamp gaps. No network/source errors.
+  CSV bytes read: 3,210,941 annual-sample bytes plus 2,184,486 schedule bytes.
+  Metadata transfers are additional. The 2026 team stats file fit within its probe
+  cap, so all 158 rows were checked; other annual data was prefix-sampled only.
+- Additional three-row source inspections confirmed canonical versus PFR game IDs
+  and GSIS player identifiers. No raw player records were saved in Git.
+- `.\.venv\Scripts\ruff.exe check .`: passed.
+- `.\.venv\Scripts\ruff.exe format --check .`: passed.
+- `.\.venv\Scripts\python.exe -m pytest`: 8 passed. Coverage includes truncated CSV
+  tails, prefix checksum scope, ignored HTTP Range limits, metadata-error versus
+  missing-asset distinction, timezone-aware manifests, and availability evidence,
+  along with the existing API/localhost tests.
+- `.\.venv\Scripts\nfl.exe audit-sources --help`: command/options registered.
+- Exported `docs/source_manifest.schema.json` from the validated Pydantic model.
+- `git diff --check`: passed. No commits, pushes, or publications were performed.
+
+### Remaining limitations / next stage
+
+This completes the source-audit stage, not full ingestion. Most annual probes
+examine only the first three rows; no full-season completeness or null-rate claims
+are made. Asset URLs/tags are mutable and source versions can be corrected later.
+Historical evaluation based on today's corrected stats/rosters must be labeled
+approximate where original availability cannot be proven. Preseason remains
+unsupported. No prediction metrics exist yet.
+
+Prompt 03 is next: one-season ingestion smoke run, immutable raw downloads,
+normalized Parquet, SQLite migrations, DuckDB queries, repeatability and coverage
+validation. Continue without requiring optional injury timestamps; retain gaps.
+
+Suggested commit: `docs: audit free NFL sources and define data contracts`

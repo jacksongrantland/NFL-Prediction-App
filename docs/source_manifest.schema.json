@@ -1,0 +1,148 @@
+{
+  "additionalProperties": false,
+  "description": "Retrieval and source publication are deliberately independent facts.",
+  "properties": {
+    "schema_version": {
+      "const": "source-manifest/1",
+      "default": "source-manifest/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "dataset": {
+      "minLength": 1,
+      "title": "Dataset",
+      "type": "string"
+    },
+    "season": {
+      "maximum": 2100,
+      "minimum": 1999,
+      "title": "Season",
+      "type": "integer"
+    },
+    "source_url": {
+      "format": "uri",
+      "maxLength": 2083,
+      "minLength": 1,
+      "title": "Source Url",
+      "type": "string"
+    },
+    "retrieved_at": {
+      "format": "date-time",
+      "title": "Retrieved At",
+      "type": "string"
+    },
+    "source_published_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Published At"
+    },
+    "source_updated_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Updated At"
+    },
+    "available_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Available At"
+    },
+    "availability_evidence": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Availability Evidence"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "checksum_scope": {
+      "enum": [
+        "full_artifact",
+        "sample_prefix"
+      ],
+      "title": "Checksum Scope",
+      "type": "string"
+    },
+    "byte_count": {
+      "exclusiveMinimum": 0,
+      "title": "Byte Count",
+      "type": "integer"
+    },
+    "source_schema_version": {
+      "minLength": 1,
+      "title": "Source Schema Version",
+      "type": "string"
+    },
+    "coverage": {
+      "enum": [
+        "sample_only",
+        "partial_season",
+        "season_validated"
+      ],
+      "title": "Coverage",
+      "type": "string"
+    },
+    "attribution_url": {
+      "format": "uri",
+      "maxLength": 2083,
+      "minLength": 1,
+      "title": "Attribution Url",
+      "type": "string"
+    },
+    "redistribution_status": {
+      "enum": [
+        "review_required",
+        "attribution_required"
+      ],
+      "title": "Redistribution Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "dataset",
+    "season",
+    "source_url",
+    "retrieved_at",
+    "sha256",
+    "checksum_scope",
+    "byte_count",
+    "source_schema_version",
+    "coverage",
+    "attribution_url",
+    "redistribution_status"
+  ],
+  "title": "SourceManifest",
+  "type": "object"
+}
