@@ -611,3 +611,24 @@ Prompt 08 checks: 72 backend tests passed (excluding the next-stage history test
 Ruff lint/format and git diff whitespace checks passed. The final 100-draw CLI
 smoke covered all 16 games in 42.114 seconds; validation Brier 0.409688, log loss
 0.595905, score coverage 93.75%. Sampling counts/configs are reported separately.
+
+## Prompt 09 completed - October 21, 2026
+
+Added migration 0003, append-only forecast versions/schedule observations, immutable
+per-game locks and provisional/settled/cancelled actual revisions. Writer-assigned
+generation time rejects backdating; strict input cutoff, kickoff, delayed job and
+reschedule rules are documented in forecast_history.md. SQLite triggers reject
+history mutation. Late jobs cannot manufacture official pregame history. Explicit
+retrospective versions are never eligible for locks. Corrected actuals retain every
+revision and exact forecast/result pairs in the audit view, including player errors.
+
+Added `nfl forecasts publish/lock/result/reconcile/audit`. Real command
+`nfl forecasts reconcile 2026` imported 79 completed games from the existing validated
+snapshot; it created no historical pregame forecasts. Six fake-clock/history tests
+pass, including duplicate locks, late runs, missing forecasts, postponements,
+timezones, backdating, immutable rows and result corrections. Next: Prompt 10
+repeatable safe local refresh orchestration without installing a scheduled task.
+
+Prompt 09 full verification: 78 backend tests passed (21.35 seconds), Ruff lint and
+format checks passed, and git diff whitespace validation passed. No remote/push,
+payment, deployment, or scheduled task was created.
