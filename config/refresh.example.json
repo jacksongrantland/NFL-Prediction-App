@@ -7,8 +7,13 @@
   "horizon_days": 8,
   "request_interval_seconds": 0.5,
   "daily_hour_chicago": 8,
-  "pregame_minutes": [90, 30, 10],
+  "pregame_minutes": [
+    90,
+    30,
+    10
+  ],
   "minimum_refresh_minutes": 10,
   "lock_minutes": 5,
-  "max_stale_hours": 36
+  "max_stale_hours": 36,
+  "team_model": "artifacts/team-components/f4d52c24b03024fb95a4a28ccc0da27e5e541c90c3d0eb085a857bf996376418"
 }

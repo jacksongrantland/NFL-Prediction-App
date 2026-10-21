@@ -87,3 +87,45 @@ def test_broken_accounting_rejected():
     result["teams"].loc[0, "score"] += 1
     with pytest.raises(ValueError, match="accounting"):
         validate(result)
+
+
+def test_evaluated_team_components_preserve_kicking_and_defense_accounting():
+    game, players = inputs()
+    for side in ("home", "away"):
+        game[f"{side}_components"] = {
+            "fg_att": 2.5,
+            "fg_made": 2,
+            "pat_att": 3,
+            "pat_made": 2.8,
+            "def_sacks": 3,
+            "def_interceptions": 1,
+        }
+    result = simulate(game, players, count=100, seed=19)
+    validate(result)
+    assert result["summary"]["accounting_version"] == "simulation/2"
+    assert (result["teams"].field_goals <= result["teams"].field_goal_attempts).all()
+    assert (result["teams"].extra_points <= result["teams"].extra_point_attempts).all()
+    assert "team_stat_summaries" in result["summary"]
+
+
+def test_reliability_bins_count_boundaries_once():
+    from nfl_prediction.models.simulation_io import reliability
+
+    frame = pd.DataFrame(
+        {
+            "home_probability": [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+            "home_won": [False, False, False, True, True, True],
+        }
+    )
+    bins = reliability(frame)
+    assert sum(row["n"] for row in bins) == len(frame)
+    assert [row["n"] for row in bins] == [1, 1, 1, 1, 2]
+
+
+def test_preseason_never_reuses_regular_season_simulation_confidence():
+    import pytest
+
+    game, players = inputs()
+    game["game_type"] = "PRE"
+    with pytest.raises(ValueError, match="Preseason"):
+        simulate(game, players, count=100)

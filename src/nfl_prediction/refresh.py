@@ -28,6 +28,7 @@ class RefreshConfig(BaseModel):
     game_model: Path
     player_model: Path
     participation: Path
+    team_model: Path | None = None
     data_dir: Path = Path("data")
     artifacts_dir: Path = Path("artifacts/refresh")
     count: int = Field(default=500, ge=100, le=5000)
@@ -185,6 +186,8 @@ def refresh(
                     count=config.count,
                     seed=config.seed,
                     game_ids=week_games.game_id.tolist(),
+                    team_model=config.team_model,
+                    data_dir=config.data_dir,
                 )
                 state["simulations"].append(result)
             return {"simulation_ids": [r["simulation_id"] for r in state["simulations"]]}
@@ -252,13 +255,16 @@ def refresh(
                             "simulation_seed": summary["seed"],
                             "simulation_config": {
                                 "count": config.count,
-                                "accounting_version": "simulation/1",
+                                "accounting_version": artifact["accounting_version"],
                                 "artifact_path": str(folder.resolve()),
                                 "simulation_id": artifact["simulation_id"],
                             },
                             "supported_outputs": ["scores", "QB_RB_WR_TE_offense"],
                             "summary": summary,
                         }
+                        if artifact.get("team_model_id"):
+                            payload["model_versions"]["team_components"] = artifact["team_model_id"]
+                            payload["supported_outputs"].append("team_kicking_sacks_interceptions")
                         try:
                             published.append(store.publish(payload))
                         except ValueError as error:

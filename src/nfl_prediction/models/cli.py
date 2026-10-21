@@ -99,6 +99,8 @@ def simulate_week(
     count: int = typer.Option(500, min=100, max=5000),
     seed: int = typer.Option(2026),
     validation: bool = typer.Option(False),
+    team_model: Path | None = typer.Option(None),
+    data_dir: Path = typer.Option(Path("data")),
     output: Path = typer.Option(Path("artifacts/simulations")),
 ) -> None:
     """Generate joint local samples or evaluate earlier OOF weeks; never publish."""
@@ -114,5 +116,25 @@ def simulate_week(
         count=count,
         seed=seed,
         validation=validation,
+        team_model=team_model,
+        data_dir=data_dir,
     )
     typer.echo(json.dumps(report, indent=2))
+
+
+@app.command("extended-baselines")
+def extended_baselines(
+    features: Path,
+    data_dir: Path = typer.Option(Path("data")),
+    output: Path = typer.Option(Path("artifacts/team-components")),
+):
+    """Audit/evaluate supported team kicking/defense targets; individual roles stay unsupported."""
+    from nfl_prediction.models.extended import run
+
+    report = run(features, data_dir, output)
+    typer.echo(
+        json.dumps(
+            {k: v for k, v in report.items() if k not in ("validation", "selection_scores")},
+            indent=2,
+        )
+    )

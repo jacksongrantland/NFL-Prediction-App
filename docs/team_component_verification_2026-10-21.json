@@ -1,0 +1,475 @@
+{
+  "team_model_id": "f4d52c24b03024fb95a4a28ccc0da27e5e541c90c3d0eb085a857bf996376418",
+  "kind": "team_kicking_limited_defense_baselines",
+  "config": {
+    "version": "features/1",
+    "history_games": 16,
+    "half_life_games": 5.0,
+    "prior_games": 4.0,
+    "completion_delay_hours": 12,
+    "default_team_points": 21.0,
+    "default_rest_days": 7.0,
+    "positions": [
+      "QB",
+      "RB",
+      "WR",
+      "TE"
+    ],
+    "stats": [
+      "attempts",
+      "completions",
+      "passing_yards",
+      "passing_tds",
+      "passing_interceptions",
+      "carries",
+      "rushing_yards",
+      "rushing_tds",
+      "targets",
+      "receptions",
+      "receiving_yards",
+      "receiving_tds"
+    ]
+  },
+  "selected": {
+    "field_goals": "league",
+    "extra_points": "own",
+    "sacks": "opponent",
+    "interceptions": "opponent"
+  },
+  "audit": [
+    {
+      "season": 2020,
+      "team_games": 538,
+      "nulls": {
+        "fg_att": 0,
+        "fg_made": 0,
+        "pat_att": 0,
+        "pat_made": 0,
+        "def_sacks": 0,
+        "def_interceptions": 0
+      },
+      "sack_credit_disagreements_excluded": 3,
+      "interception_disagreements_excluded": 0,
+      "snapshot_id": "3559a47d93709cbf5e41392ec2e05eb6c3deae72a76d41dc1692c9999bea6f1d",
+      "source_manifest_id": "23bb7964582027355c7f025bc3e0e9ef8a88f96905203bb11a6027a71a912aee"
+    },
+    {
+      "season": 2021,
+      "team_games": 570,
+      "nulls": {
+        "fg_att": 0,
+        "fg_made": 0,
+        "pat_att": 0,
+        "pat_made": 0,
+        "def_sacks": 0,
+        "def_interceptions": 0
+      },
+      "sack_credit_disagreements_excluded": 12,
+      "interception_disagreements_excluded": 0,
+      "snapshot_id": "20d0e5f854654517009b4c17b8423d7fd2bd22318d8cd6a05c9cb43cb38bc400",
+      "source_manifest_id": "6d63a0a37378050e8b71cc16f9577a685047bd39ab3636f07527c9b4e9cc96fb"
+    },
+    {
+      "season": 2022,
+      "team_games": 568,
+      "nulls": {
+        "fg_att": 0,
+        "fg_made": 0,
+        "pat_att": 0,
+        "pat_made": 0,
+        "def_sacks": 0,
+        "def_interceptions": 0
+      },
+      "sack_credit_disagreements_excluded": 7,
+      "interception_disagreements_excluded": 0,
+      "snapshot_id": "49e64fd524025c82ecc6051fbade4d25e4b3757ee6d1858e8a90a5ec84023adf",
+      "source_manifest_id": "3e1fe1de86200090017d351757bb4d74d37622b9133cbdd01231ff796e84f283"
+    },
+    {
+      "season": 2023,
+      "team_games": 570,
+      "nulls": {
+        "fg_att": 0,
+        "fg_made": 0,
+        "pat_att": 0,
+        "pat_made": 0,
+        "def_sacks": 0,
+        "def_interceptions": 0
+      },
+      "sack_credit_disagreements_excluded": 11,
+      "interception_disagreements_excluded": 0,
+      "snapshot_id": "2462d080e4335c7eae6ab21e7101aaec134f10db3de0fa202e7fa57fbd265f5a",
+      "source_manifest_id": "1b3103c717213ef282aa6b8f31f174e6a6f8e7438f9c7d17f49e88320f345e69"
+    },
+    {
+      "season": 2024,
+      "team_games": 570,
+      "nulls": {
+        "fg_att": 0,
+        "fg_made": 0,
+        "pat_att": 0,
+        "pat_made": 0,
+        "def_sacks": 0,
+        "def_interceptions": 0
+      },
+      "sack_credit_disagreements_excluded": 10,
+      "interception_disagreements_excluded": 0,
+      "snapshot_id": "7e0731d4216c340a3054074f507e99048c292595b078252129df06e14eff7a57",
+      "source_manifest_id": "59f323283203978357d53559c95cbdcd6fdaf2e3d796bb1f6b328b360d6b06a6"
+    },
+    {
+      "season": 2025,
+      "team_games": 570,
+      "nulls": {
+        "fg_att": 0,
+        "fg_made": 0,
+        "pat_att": 0,
+        "pat_made": 0,
+        "def_sacks": 0,
+        "def_interceptions": 0
+      },
+      "sack_credit_disagreements_excluded": 9,
+      "interception_disagreements_excluded": 0,
+      "snapshot_id": "75d06c9f2e0d2d41e2c1cb735ce413b0b938140b42d6319506b51b31569d7276",
+      "source_manifest_id": "3ed63ae5f77664a217a4f402d48f683ac919020976935a17b167a547c32bd1c1"
+    },
+    {
+      "season": 2026,
+      "team_games": 186,
+      "nulls": {
+        "fg_att": 0,
+        "fg_made": 0,
+        "pat_att": 0,
+        "pat_made": 0,
+        "def_sacks": 0,
+        "def_interceptions": 0
+      },
+      "sack_credit_disagreements_excluded": 4,
+      "interception_disagreements_excluded": 0,
+      "snapshot_id": "d93653da0303e87f878d41c5d814266140aee21daa36c7e3be6935810a0636c0",
+      "source_manifest_id": "94888820c4a0a442d9666d2611e93854cfa9ece5137293dd3f1e1d22cb0faa8d"
+    }
+  ],
+  "validation": [
+    {
+      "season": 2021,
+      "selected": {
+        "field_goals": "league",
+        "extra_points": "league",
+        "sacks": "league",
+        "interceptions": "league"
+      },
+      "metrics": [
+        {
+          "stat": "fg_att",
+          "n": 570,
+          "mae": 1.009364508085528,
+          "bias": -0.010505681034991915,
+          "coverage_80": 0.9017543859649123
+        },
+        {
+          "stat": "fg_made",
+          "n": 570,
+          "mae": 0.9999297973582076,
+          "bias": -0.026700901443305218,
+          "coverage_80": 0.787719298245614
+        },
+        {
+          "stat": "pat_att",
+          "n": 570,
+          "mae": 1.24360815423739,
+          "bias": 0.20666123877257175,
+          "coverage_80": 0.8175438596491228
+        },
+        {
+          "stat": "pat_made",
+          "n": 570,
+          "mae": 1.249655876815501,
+          "bias": 0.18282022736584713,
+          "coverage_80": 0.7175438596491228
+        },
+        {
+          "stat": "def_sacks",
+          "n": 558,
+          "mae": 1.2576192481036967,
+          "bias": -0.08823838375370457,
+          "coverage_80": 0.7921146953405018
+        },
+        {
+          "stat": "def_interceptions",
+          "n": 570,
+          "mae": 0.7553169523348022,
+          "bias": -0.030732495132879217,
+          "coverage_80": 0.9210526315789473
+        }
+      ]
+    },
+    {
+      "season": 2022,
+      "selected": {
+        "field_goals": "league",
+        "extra_points": "own",
+        "sacks": "opponent",
+        "interceptions": "opponent"
+      },
+      "metrics": [
+        {
+          "stat": "fg_att",
+          "n": 568,
+          "mae": 0.9753500948225853,
+          "bias": -0.049187098833750095,
+          "coverage_80": 0.7711267605633803
+        },
+        {
+          "stat": "fg_made",
+          "n": 568,
+          "mae": 0.967740895240731,
+          "bias": -0.050884666204649875,
+          "coverage_80": 0.7764084507042254
+        },
+        {
+          "stat": "pat_att",
+          "n": 568,
+          "mae": 1.0616501248042352,
+          "bias": 0.08825370912787932,
+          "coverage_80": 0.8169014084507042
+        },
+        {
+          "stat": "pat_made",
+          "n": 568,
+          "mae": 1.0709285709905592,
+          "bias": 0.07495767058538122,
+          "coverage_80": 0.8397887323943662
+        },
+        {
+          "stat": "def_sacks",
+          "n": 561,
+          "mae": 1.3570068153715777,
+          "bias": -0.017469586100978155,
+          "coverage_80": 0.7647058823529411
+        },
+        {
+          "stat": "def_interceptions",
+          "n": 568,
+          "mae": 0.7459223784640467,
+          "bias": 0.005796216474280088,
+          "coverage_80": 0.7904929577464789
+        }
+      ]
+    },
+    {
+      "season": 2023,
+      "selected": {
+        "field_goals": "league",
+        "extra_points": "own",
+        "sacks": "opponent",
+        "interceptions": "opponent"
+      },
+      "metrics": [
+        {
+          "stat": "fg_att",
+          "n": 570,
+          "mae": 1.0369440220120392,
+          "bias": -0.021062264548883665,
+          "coverage_80": 0.7543859649122807
+        },
+        {
+          "stat": "fg_made",
+          "n": 570,
+          "mae": 1.0120080578439146,
+          "bias": -0.028593951501764928,
+          "coverage_80": 0.7473684210526316
+        },
+        {
+          "stat": "pat_att",
+          "n": 570,
+          "mae": 1.1511808278170832,
+          "bias": 0.05494628559013002,
+          "coverage_80": 0.7824561403508772
+        },
+        {
+          "stat": "pat_made",
+          "n": 570,
+          "mae": 1.143217908014146,
+          "bias": 0.04328763702960856,
+          "coverage_80": 0.7824561403508772
+        },
+        {
+          "stat": "def_sacks",
+          "n": 559,
+          "mae": 1.423294731671697,
+          "bias": -0.09617893138605026,
+          "coverage_80": 0.7549194991055456
+        },
+        {
+          "stat": "def_interceptions",
+          "n": 570,
+          "mae": 0.7247787507606126,
+          "bias": 0.014520939516363145,
+          "coverage_80": 0.8087719298245614
+        }
+      ]
+    },
+    {
+      "season": 2024,
+      "selected": {
+        "field_goals": "league",
+        "extra_points": "own",
+        "sacks": "opponent",
+        "interceptions": "opponent"
+      },
+      "metrics": [
+        {
+          "stat": "fg_att",
+          "n": 570,
+          "mae": 1.0012193079027272,
+          "bias": -0.11198848295022741,
+          "coverage_80": 0.7543859649122807
+        },
+        {
+          "stat": "fg_made",
+          "n": 570,
+          "mae": 1.0228904766620492,
+          "bias": -0.07420578604442826,
+          "coverage_80": 0.7350877192982456
+        },
+        {
+          "stat": "pat_att",
+          "n": 570,
+          "mae": 1.0964445300262446,
+          "bias": -0.013852829299875575,
+          "coverage_80": 0.8
+        },
+        {
+          "stat": "pat_made",
+          "n": 570,
+          "mae": 1.1131596700599908,
+          "bias": -0.017740808646360056,
+          "coverage_80": 0.7842105263157895
+        },
+        {
+          "stat": "def_sacks",
+          "n": 560,
+          "mae": 1.3908255338408326,
+          "bias": 0.006822140892732219,
+          "coverage_80": 0.7821428571428571
+        },
+        {
+          "stat": "def_interceptions",
+          "n": 570,
+          "mae": 0.7238744408830761,
+          "bias": 0.032294575756871384,
+          "coverage_80": 0.8210526315789474
+        }
+      ]
+    }
+  ],
+  "final_test_season": 2025,
+  "final_test": [
+    {
+      "stat": "fg_att",
+      "n": 570,
+      "mae": 0.9725443286671912,
+      "bias": -0.05184590004596179,
+      "coverage_80": 0.8350877192982457
+    },
+    {
+      "stat": "fg_made",
+      "n": 570,
+      "mae": 1.0053996599895327,
+      "bias": -0.05517435855789534,
+      "coverage_80": 0.743859649122807
+    },
+    {
+      "stat": "pat_att",
+      "n": 570,
+      "mae": 1.1449000015699315,
+      "bias": 0.009439678946411383,
+      "coverage_80": 0.7947368421052632
+    },
+    {
+      "stat": "pat_made",
+      "n": 570,
+      "mae": 1.137072529072576,
+      "bias": -0.0019894687565681704,
+      "coverage_80": 0.8052631578947368
+    },
+    {
+      "stat": "def_sacks",
+      "n": 561,
+      "mae": 1.371952333091716,
+      "bias": 0.0038550894718752944,
+      "coverage_80": 0.786096256684492
+    },
+    {
+      "stat": "def_interceptions",
+      "n": 570,
+      "mae": 0.6896064765947136,
+      "bias": 0.014371332684654039,
+      "coverage_80": 0.8350877192982457
+    }
+  ],
+  "test_policy": "First fixed additional-target test; never retune against it.",
+  "source_snapshots": {
+    "2020": "3559a47d93709cbf5e41392ec2e05eb6c3deae72a76d41dc1692c9999bea6f1d",
+    "2021": "20d0e5f854654517009b4c17b8423d7fd2bd22318d8cd6a05c9cb43cb38bc400",
+    "2022": "49e64fd524025c82ecc6051fbade4d25e4b3757ee6d1858e8a90a5ec84023adf",
+    "2023": "2462d080e4335c7eae6ab21e7101aaec134f10db3de0fa202e7fa57fbd265f5a",
+    "2024": "7e0731d4216c340a3054074f507e99048c292595b078252129df06e14eff7a57",
+    "2025": "75d06c9f2e0d2d41e2c1cb735ce413b0b938140b42d6319506b51b31569d7276",
+    "2026": "d93653da0303e87f878d41c5d814266140aee21daa36c7e3be6935810a0636c0"
+  },
+  "feature_id": "c83640eb21d8b19a96ead5db6c4b69634bace9c1fb0cc611acd226c8868d44dc",
+  "supported_fields": [
+    "fg_att",
+    "fg_made",
+    "pat_att",
+    "pat_made",
+    "def_sacks",
+    "def_interceptions"
+  ],
+  "scope": "Team aggregates only; no individual kicker/defender or full DST fantasy",
+  "position_stat_rows": {
+    "WR": 16214,
+    "LB": 15212,
+    "CB": 12422,
+    "RB": 10111,
+    "DE": 9799,
+    "DT": 9494,
+    "TE": 8046,
+    "SAF": 6614,
+    "QB": 4287,
+    "DB": 3684,
+    "K": 3568,
+    "P": 3517,
+    "OT": 2866,
+    "OLB": 2338,
+    "FS": 1956,
+    "G": 1917,
+    "S": 1366,
+    "MLB": 1183,
+    "ILB": 1132,
+    "C": 967,
+    "NT": 750,
+    "FB": 650,
+    "LS": 456,
+    "DL": 218,
+    "OL": 34
+  },
+  "preseason_schedule_rows": 0,
+  "unsupported": [
+    "Individual kicker/depth assignments",
+    "Individual defenders/returners",
+    "Full DST fantasy",
+    "Other on-field roles",
+    "Preseason"
+  ],
+  "historical_mode": "approximate_corrected_sources",
+  "recommended_for_decisions": false,
+  "files": {
+    "actuals.parquet": "7c77b1b6527fbd2714e7b2dd4355b78a1d43a43600556760701a7d12b6c640b2",
+    "intervals.json": "550c91b069ca17a854ec81b28e6e5158a870b0079d729819b6b50b21ee6f1e2a",
+    "projections.parquet": "a1190ad8a6bedcf8a8cbed0789ad138db14304f9181717e4ec8fc1e2c578ba80",
+    "validation_predictions.parquet": "75733f1558d3f1d31acda826b54e840526e9051f454a6e5fa821400826749e2b"
+  }
+}

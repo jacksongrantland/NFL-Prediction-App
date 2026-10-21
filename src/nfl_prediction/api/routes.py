@@ -212,6 +212,7 @@ def evaluation():
         ("games", "game_model_verification_2026-10-15.json"),
         ("players", "offense_default_verification_2026-10-21.json"),
         ("simulation", "simulation_verification_2026-10-21.json"),
+        ("team_components", "team_component_verification_2026-10-21.json"),
     ):
         path = docs / name
         if path.exists():
@@ -256,6 +257,7 @@ class TeamForecast(BaseModel):
     score_p90: float
     win_probability: float
     tie_probability: float
+    components: dict[str, Distribution] = {}
     scope: str = "Joint-sample scoring; individual kicking/defense unsupported"
 
 
@@ -277,6 +279,10 @@ def team_forecasts(forecast_id: str):
             "score_p90": summary[f"{side}_p10_p90"][1],
             "win_probability": summary[f"{side}_win"],
             "tie_probability": summary["tie"],
+            "components": summary.get("team_stat_summaries", {}).get(side, {}),
+            "scope": "Evaluated team kicking/sacks/interceptions; individual roles unsupported"
+            if summary.get("team_stat_summaries")
+            else "Joint scoring; aggregate kicking/defense approximation",
         }
         for side in ("home", "away")
     ]

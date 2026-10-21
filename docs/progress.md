@@ -736,3 +736,37 @@ final cutoff correction, including conservation, pushes, cutoff/duplicate reject
 refunds, immutable rows and negative correction debt. Ruff lint/format and frontend
 strict build passed. Next: Prompt 14 coverage audit and evaluated kicking/team
 special-teams/defense additions, keeping unsupported roles explicit.
+
+## Prompt 14 completed - October 21, 2026
+
+Audited free existing raw/normalized 2020-2026 sources and added evaluated team
+FG/PAT attempt/make and defensive sack/interception baselines. Exact raw row identity,
+checksums, nonnegative/integer constraints, makes<=attempts and opponent reconciliation
+are enforced. 3,572 team-game rows have no nulls in these fields; 56 defensive sack
+credit disagreements remain excluded, not invented actuals. Earlier-fold selection
+retains league FG, team PAT and opponent-aware defensive baselines. The first fixed
+2025 additional-target test is frozen; offense's observed 2025 holdout was not reused.
+Team FG-made MAE 1.005 (570), sack MAE 1.372 (561), INT MAE 0.690 (570), with explicit
+bias/coverage and limitations. See team_component_verification_2026-10-21.json.
+
+Integrated optional frozen team components into simulation/2 and fresh pregame
+versions, preserving kick attempts/makes, score totals, opposing sacks/interceptions
+and existing fantasy eligibility. The 16-game/100-draw real 2024 diagnostic ran in
+13.829 seconds, Brier 0.469588, log loss 0.659358, score coverage 90.625%; Brier did
+not improve over the prior small check. No calibration/decision-readiness claim.
+Corrected reliability bin-edge double counting and verified seeded legacy samples
+unchanged by loop optimization. Added causal, raw-integrity, kick/defense and PRE
+rejection tests. The real current cached refresh created 14 pregame versions,
+reconciled 93 games and left the paper test pending in 42.507 seconds; browser
+verified new team summaries.
+
+Audited individual roles/defenders/returners and missing PRE coverage. No individual
+kicker/defender/returner, full DST fantasy, other-role assignment or preseason model
+is fabricated. PRE is explicitly rejected. Coverage limits and future coherent
+commit suggestions are in expanded_coverage.md. Next: Prompt 15 reproducibility,
+CI, local release review, measured operations and resume-grounded documentation.
+
+Prompt 14 final checks: 100 backend tests passed (16.02 seconds), Ruff lint/format,
+frontend strict build and git diff whitespace checks passed. Full datasets/models
+remain ignored and local. No new source purchases, remote, push, publication or
+scheduled task was created.

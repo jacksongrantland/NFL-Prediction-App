@@ -15,6 +15,21 @@ from nfl_prediction.models.player_io import load_manifest
 from nfl_prediction.models.simulation import simulate, validate
 
 
+def reliability(frame):
+    """Assign every game to exactly one bin, including floating-point boundaries."""
+    bins = np.minimum(np.floor(frame.home_probability.to_numpy() * 5).astype(int), 4)
+    return [
+        {
+            "low": i / 5,
+            "n": int((bins == i).sum()),
+            "predicted": float(frame.loc[bins == i, "home_probability"].mean()),
+            "observed": float(frame.loc[bins == i, "home_won"].mean()),
+        }
+        for i in range(5)
+        if (bins == i).any()
+    ]
+
+
 def run(
     game_model: Path,
     player_model: Path,
@@ -27,6 +42,8 @@ def run(
     seed: int = 2026,
     validation: bool = False,
     game_ids: list[str] | None = None,
+    team_model: Path | None = None,
+    data_dir: Path = Path("data"),
 ) -> dict:
     start = time.perf_counter()
     model, game_manifest = load(game_model)
@@ -41,7 +58,12 @@ def run(
     ):
         raise ValueError("Input feature schema differs from models")
     if player_manifest["feature_id"] != eligibility["feature_id"]:
-        raise ValueError("Player projections must use this feature snapshot")
+        if not validation:
+            raise ValueError("Player projections must use this feature snapshot")
+        for manifest in (player_manifest, game_manifest):
+            for year, identity in manifest.get("source_snapshots", {}).items():
+                if int(year) <= season and eligibility["source_snapshots"].get(year) != identity:
+                    raise ValueError("Historical validation source lineage differs")
     games = pd.read_parquet(features / "games.parquet")
     games = games.loc[games.season.eq(season) & games.week.eq(week)].copy()
     if game_ids is not None:
@@ -68,10 +90,51 @@ def run(
         games["home_expected"] = estimates.home_expected.to_numpy()
         games["away_expected"] = estimates.away_expected.to_numpy()
         players = pd.read_parquet(player_model / "projections.parquet")
+    if validation:
+        timing = players.loc[
+            players.game_id.isin(games.game_id), ["game_id", "cutoff"]
+        ].drop_duplicates()
+        timing = timing.merge(
+            games[["game_id", "cutoff"]], on="game_id", suffixes=("_player", "_game")
+        )
+        if (
+            not pd.to_datetime(timing.cutoff_player, utc=True)
+            .eq(pd.to_datetime(timing.cutoff_game, utc=True))
+            .all()
+        ):
+            raise ValueError("Historical player/game cutoffs differ")
+    team_manifest, components = None, None
+    if team_model is not None:
+        from nfl_prediction.models.extended import infer
+        from nfl_prediction.models.extended import load as load_extended
+
+        team_manifest = load_extended(team_model)
+        if team_manifest["config"] != eligibility["config"]:
+            raise ValueError("Team component feature definition differs")
+        if validation:
+            for year, identity in team_manifest["source_snapshots"].items():
+                if int(year) <= season and eligibility["source_snapshots"].get(year) != identity:
+                    raise ValueError("Team validation source lineage differs")
+            components = pd.read_parquet(team_model / "validation_predictions.parquet")
+        else:
+            components, _ = infer(team_model, features, data_dir)
+        components = components.set_index(["game_id", "team_id"])
     summary, team_frames, player_frames, errors = [], [], [], []
     for index, game in enumerate(games.to_dict("records")):
         subset = players.loc[players.game_id.eq(game["game_id"])]
+        if components is not None:
+            from nfl_prediction.models.extended import FIELDS
+
+            for side in ("home", "away"):
+                key = (game["game_id"], game[f"{side}_team_id"])
+                if key not in components.index:
+                    raise ValueError("Unsupported team component game")
+                game[f"{side}_components"] = {
+                    stat: float(components.loc[key, stat]) for stat in FIELDS
+                }
         result = simulate(game, subset, count=count, seed=seed + index)
+        if team_manifest:
+            result["summary"]["team_model_id"] = team_manifest["team_model_id"]
         validate(result)
         summary.append(result["summary"])
         team_frames.append(result["teams"].assign(game_id=game["game_id"]))
@@ -101,6 +164,7 @@ def run(
     identity = json_hash(
         {
             "game_model": game_manifest["model_id"],
+            "team_model": team_manifest["team_model_id"] if team_manifest else None,
             "player_model": player_manifest["player_model_id"],
             "features": eligibility["feature_id"],
             "season": season,
@@ -171,24 +235,49 @@ def run(
             "reliability": [],
             "player_metrics": player_metrics,
         }
-        for low in (0, 0.2, 0.4, 0.6, 0.8):
-            bucket = frame.loc[
-                frame.home_probability.ge(low)
-                & (
-                    frame.home_probability.lt(low + 0.2)
-                    if low < 0.8
-                    else frame.home_probability.le(1)
+        metrics["reliability"] = reliability(frame)
+        if team_model is not None:
+            from nfl_prediction.models.extended import FIELDS
+
+            actual = pd.read_parquet(team_model / "actuals.parquet")
+            draws = pd.concat(team_frames)
+            field_map = {
+                "fg_att": "field_goal_attempts",
+                "fg_made": "field_goals",
+                "pat_att": "extra_point_attempts",
+                "pat_made": "extra_points",
+                "def_sacks": "defensive_sacks",
+                "def_interceptions": "defensive_interceptions",
+            }
+            component_metrics = []
+            for stat in FIELDS:
+                grouped = draws.groupby(["game_id", "team_id"])[field_map[stat]]
+                predicted = grouped.agg(["mean"]).reset_index()
+                bounds = (
+                    grouped.quantile([0.1, 0.9])
+                    .unstack()
+                    .reset_index()
+                    .rename(columns={0.1: "p10", 0.9: "p90"})
                 )
-            ]
-            if len(bucket):
-                metrics["reliability"].append(
-                    {
-                        "low": low,
-                        "n": len(bucket),
-                        "predicted": float(bucket.home_probability.mean()),
-                        "observed": float(bucket.home_won.mean()),
-                    }
+                joined = (
+                    predicted.merge(bounds, on=["game_id", "team_id"])
+                    .merge(actual[["game_id", "team_id", stat]], on=["game_id", "team_id"])
+                    .dropna(subset=[stat])
                 )
+                if not joined.empty:
+                    error = joined["mean"] - joined[stat]
+                    component_metrics.append(
+                        {
+                            "stat": stat,
+                            "n": len(joined),
+                            "mae": float(error.abs().mean()),
+                            "bias": float(error.mean()),
+                            "coverage_80": float(
+                                ((joined.p10 <= joined[stat]) & (joined.p90 >= joined[stat])).mean()
+                            ),
+                        }
+                    )
+            metrics["team_component_metrics"] = component_metrics
         (staging / "evaluation.json").write_text(
             json.dumps({"metrics": metrics, "games": errors}, indent=2) + "\n"
         )
@@ -205,7 +294,8 @@ def run(
         "games": len(games),
         "kind": "retrospective_validation" if validation else "unpublished_preview",
         "recommended_for_decisions": False,
-        "accounting_version": "simulation/1",
+        "accounting_version": summary[0]["accounting_version"],
+        "team_model_id": team_manifest["team_model_id"] if team_manifest else None,
         "evaluation": metrics,
         "elapsed_seconds": round(time.perf_counter() - start, 3),
         "files": {p.name: file_hash(p) for p in staging.iterdir()},

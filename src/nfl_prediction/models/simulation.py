@@ -14,11 +14,30 @@ def weights(values):
 
 
 def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int = 2026) -> dict:
+    if game.get("game_type", "REG") not in ("REG", "POST"):
+        raise ValueError("Preseason and other game types are unsupported")
     if not 100 <= count <= 5000:
         raise ValueError("Simulation count must be between 100 and 5000")
     expected = np.array([game["home_expected"], game["away_expected"]], dtype=float)
     if not np.isfinite(expected).all() or (expected < 0).any():
         raise ValueError("Expected scores must be finite and nonnegative")
+    supplied = [game.get(f"{side}_components") is not None for side in ("home", "away")]
+    if any(supplied) and not all(supplied):
+        raise ValueError("Both teams require component forecasts")
+    if all(supplied):
+        for side in ("home", "away"):
+            component = game[f"{side}_components"]
+            fields = ("fg_att", "fg_made", "pat_att", "pat_made", "def_sacks", "def_interceptions")
+            if any(
+                s not in component or not np.isfinite(component[s]) or component[s] < 0
+                for s in fields
+            ):
+                raise ValueError("Missing/nonfinite/negative component forecast")
+            if (
+                component["fg_made"] > component["fg_att"]
+                or component["pat_made"] > component["pat_att"]
+            ):
+                raise ValueError("Component made kicks exceed attempts")
     rng = np.random.default_rng(seed)
     environment = rng.lognormal(-0.5 * 0.15**2, 0.15, count)
     team_draws, player_draws = [], []
@@ -41,6 +60,39 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
             float(rows.unconditional_receptions.sum()) / target_total if target_total > 0 else 0.65
         )
         completion_rate = float(np.clip(completion_rate, 0, 1))
+        opportunity_weights = {
+            stat: rows[f"conditional_{stat}"].fillna(0).to_numpy(dtype=float)
+            for stat in OPPORTUNITIES
+        }
+        catches = rows.conditional_receptions.fillna(0).to_numpy(dtype=float)
+        rush = rows.conditional_carries.fillna(0).to_numpy(dtype=float)
+        receive_rates = np.r_[
+            np.divide(
+                rows.conditional_receiving_yards.fillna(0).to_numpy(dtype=float),
+                catches,
+                out=np.full(len(rows), 10.0),
+                where=catches > 0,
+            ),
+            10.0,
+        ]
+        rush_rates = np.r_[
+            np.divide(
+                rows.conditional_rushing_yards.fillna(0).to_numpy(dtype=float),
+                rush,
+                out=np.full(len(rows), 4.0),
+                where=rush > 0,
+            ),
+            4.0,
+        ]
+        components = game.get(f"{side}_components")
+        opposite = "away" if side == "home" else "home"
+        defense = game.get(f"{opposite}_components")
+        fg_mean = float(components["fg_made"]) if components else 2.0
+        pat_rate = (
+            float(components["pat_made"]) / max(float(components["pat_att"]), 1e-9)
+            if components
+            else 0.95
+        )
         team_scores = []
         for draw in range(count):
             opportunities = {}
@@ -50,7 +102,7 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
                 opportunities[stat] = int(rng.poisson(volume * environment[draw]))
                 if stat == "targets":
                     opportunities[stat] = min(opportunities[stat], opportunities["attempts"])
-                raw = rows[f"conditional_{stat}"].fillna(0).to_numpy(dtype=float) * active[draw]
+                raw = opportunity_weights[stat] * active[draw]
                 # Unknown/omitted role work survives; sampled absences redistribute by weights.
                 other = max(float(remaining[stat]), volume * 0.01)
                 allocations[stat] = weights(np.r_[raw, other])
@@ -65,20 +117,7 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
             passer = int(rng.choice(size, p=allocations["attempts"]))
             yards, rush_yards = np.zeros(size), np.zeros(size)
             for index in range(size):
-                if index < len(rows):
-                    row = rows.iloc[index]
-                    catches = float(row.conditional_receptions or 0)
-                    rush = float(row.conditional_carries or 0)
-                    receive_rate = (
-                        float(row.conditional_receiving_yards or 0) / catches
-                        if catches > 0
-                        else 10.0
-                    )
-                    rush_rate = (
-                        float(row.conditional_rushing_yards or 0) / rush if rush > 0 else 4.0
-                    )
-                else:
-                    receive_rate, rush_rate = 10.0, 4.0
+                receive_rate, rush_rate = receive_rates[index], rush_rates[index]
                 # Signed aggregate production; no fabricated individual play realism.
                 yards[index] = round(
                     rng.normal(
@@ -89,7 +128,7 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
                     rng.normal(rush_counts[index] * rush_rate, 4 * np.sqrt(rush_counts[index]))
                 )
             raw_expected = float(game[f"{side}_expected"])
-            base_td = max(0.05, (raw_expected - 6.0 - 0.7) / 7)
+            base_td = max(0.05, (raw_expected - 3 * fg_mean - 0.7) / 7)
             td_scale = base_td / max(1, completions * 0.07 + carries * 0.03)
             receiving_td = rng.binomial(receiver_counts, min(0.5, 0.07 * td_scale))
             rushing_td = rng.binomial(rush_counts, min(0.5, 0.03 * td_scale))
@@ -98,15 +137,39 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
             touchdowns_all = touchdowns + dst_td
             two_attempts = int(rng.binomial(touchdowns_all, 0.03))
             two_made = int(rng.binomial(two_attempts, 0.48))
-            extra_points = int(rng.binomial(touchdowns_all - two_attempts, 0.95))
-            field_goals = int(rng.poisson(2.0 * environment[draw]))
+            pat_attempts = touchdowns_all - two_attempts
+            extra_points = int(rng.binomial(pat_attempts, float(np.clip(pat_rate, 0, 1))))
+            if components:
+                fg_attempts = int(
+                    rng.poisson(max(0, float(components["fg_att"])) * environment[draw])
+                )
+                make_rate = fg_mean / max(float(components["fg_att"]), 1e-9)
+                field_goals = int(rng.binomial(fg_attempts, float(np.clip(make_rate, 0, 1))))
+            else:
+                field_goals = int(rng.poisson(2.0 * environment[draw]))
+                fg_attempts = (
+                    field_goals  # legacy aggregate approximation, not a supported attempts forecast
+                )
+
             safeties = int(rng.binomial(1, 0.015))
             score = (
                 6 * touchdowns_all + extra_points + 2 * two_made + 3 * field_goals + 2 * safeties
             )
-            sacks = int(rng.poisson(0.065 * attempts))
+            sacks_mean = (
+                float(defense["def_sacks"]) * environment[draw] if defense else 0.065 * attempts
+            )
+            sacks = int(rng.poisson(max(0, sacks_mean)))
             sack_yards = int(rng.poisson(7 * sacks))
-            interceptions = int(rng.binomial(attempts - completions, 0.06))
+            int_rate = (
+                float(defense["def_interceptions"])
+                * environment[draw]
+                / max(1, attempts - completions)
+                if defense
+                else 0.06
+            )
+            interceptions = int(
+                rng.binomial(attempts - completions, float(np.clip(int_rate, 0, 1)))
+            )
             fumbles = int(rng.binomial(carries + completions + sacks, 0.015))
             lost = int(rng.binomial(fumbles, 0.5))
             values["attempts"][draw, passer] = attempts
@@ -135,6 +198,9 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
                     "net_passing_yards": int(yards.sum()) - sack_yards,
                     "defense_st_tds": dst_td,
                     "field_goals": field_goals,
+                    "field_goal_attempts": fg_attempts,
+                    "extra_point_attempts": pat_attempts,
+                    "interceptions_thrown": interceptions,
                     "extra_points": extra_points,
                     "two_point_attempts": two_attempts,
                     "two_point_made": two_made,
@@ -165,18 +231,23 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
         if game.get("game_type") == "POST" or rng.random() < 0.9:
             side = "home" if rng.random() < expected[0] / max(expected.sum(), 1) else "away"
             index = teams.index[teams.draw.eq(draw) & teams.side.eq(side)][0]
-            teams.loc[index, ["score", "field_goals", "overtime_points"]] += [3, 1, 3]
+            teams.loc[
+                index, ["score", "field_goals", "field_goal_attempts", "overtime_points"]
+            ] += [3, 1, 1, 3]
     home = teams.loc[teams.side.eq("home"), "score"].to_numpy()
     away = teams.loc[teams.side.eq("away"), "score"].to_numpy()
     for side, other in (("home", "away"), ("away", "home")):
         teams.loc[teams.side.eq(side), "defensive_sacks"] = teams.loc[
             teams.side.eq(other), "sacks_allowed"
         ].to_numpy()
+        teams.loc[teams.side.eq(side), "defensive_interceptions"] = teams.loc[
+            teams.side.eq(other), "interceptions_thrown"
+        ].to_numpy()
     summary = {
         "game_id": game["game_id"],
         "seed": seed,
         "count": count,
-        "accounting_version": "simulation/1",
+        "accounting_version": "simulation/2" if game.get("home_components") else "simulation/1",
         "forecast_type": "experimental_joint_preview",
         "recommended_for_decisions": False,
         "raw_home_expected": expected[0],
@@ -190,6 +261,29 @@ def simulate(game: dict, players: pd.DataFrame, *, count: int = 500, seed: int =
         "away_p10_p90": np.quantile(away, [0.1, 0.9]).tolist(),
         "player_summaries": [],
     }
+    if game.get("home_components"):
+        fields = {
+            "fg_att": "field_goal_attempts",
+            "fg_made": "field_goals",
+            "pat_att": "extra_point_attempts",
+            "pat_made": "extra_points",
+            "def_sacks": "defensive_sacks",
+            "def_interceptions": "defensive_interceptions",
+        }
+        summary["team_component_inputs"] = {
+            side: game[f"{side}_components"] for side in ("home", "away")
+        }
+        summary["team_stat_summaries"] = {
+            side: {
+                stat: {
+                    "mean": float(teams.loc[teams.side.eq(side), column].mean()),
+                    "p10": float(teams.loc[teams.side.eq(side), column].quantile(0.1)),
+                    "p90": float(teams.loc[teams.side.eq(side), column].quantile(0.9)),
+                }
+                for stat, column in fields.items()
+            }
+            for side in ("home", "away")
+        }
     for (team, player), group in samples.groupby(["team_id", "player_id"]):
         summary["player_summaries"].append(
             {
@@ -247,5 +341,17 @@ def validate(result: dict) -> None:
     checks.append(players[nonnegative].ge(0).all(axis=1))
     checks.append(players.completions.le(players.attempts))
     checks.append(players.receptions.le(players.targets))
+    if "field_goal_attempts" in team:
+        checks.append(team.field_goals.le(team.field_goal_attempts))
+        checks.append(team.extra_points.le(team.extra_point_attempts))
+        pairs = team.reset_index().pivot(index="draw", columns="side")
+        checks.append(pairs["defensive_sacks"]["home"].eq(pairs["sacks_allowed"]["away"]))
+        checks.append(pairs["defensive_sacks"]["away"].eq(pairs["sacks_allowed"]["home"]))
+        checks.append(
+            pairs["defensive_interceptions"]["home"].eq(pairs["interceptions_thrown"]["away"])
+        )
+        checks.append(
+            pairs["defensive_interceptions"]["away"].eq(pairs["interceptions_thrown"]["home"])
+        )
     if not all(check.all() for check in checks):
         raise ValueError("Joint football accounting constraint failed")
