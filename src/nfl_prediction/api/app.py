@@ -6,7 +6,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from nfl_prediction import __version__
+from nfl_prediction.api.fantasy_routes import router as fantasy_router
 from nfl_prediction.api.routes import router
+from nfl_prediction.api.security import local_writes
 
 
 class HealthResponse(BaseModel):
@@ -17,6 +19,8 @@ class HealthResponse(BaseModel):
 
 app = FastAPI(title="NFL Prediction API", version=__version__)
 app.include_router(router)
+app.include_router(fantasy_router)
+app.middleware("http")(local_writes)
 
 
 @app.get("/api/health", response_model=HealthResponse)

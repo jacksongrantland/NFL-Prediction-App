@@ -15,3 +15,4 @@ class Settings(BaseSettings):
     display_timezone: Literal["America/Chicago"] = "America/Chicago"
 
     data_dir: Path = Path("data")
+    artifacts_dir: Path = Path("artifacts")

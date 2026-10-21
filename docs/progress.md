@@ -685,3 +685,29 @@ lint/format and whitespace checks passed, and frontend strict checking/build pas
 One dependency deprecation warning is recorded for Starlette's current TestClient
 httpx integration; it does not change app behavior. Next: Prompt 12 fantasy scoring
 and eligible pregame lineup comparison.
+
+## Prompt 12 completed - October 21, 2026
+
+Added versioned configurable standard/half-PPR/PPR supported offensive scoring from
+joint unrounded samples, exact QB/RB/WR/TE/FLEX assignment, explicit expected/floor/
+upside objectives and numerical alternative comparisons. Unsupported fumble/two-point/
+kicking/defensive contributions are excluded and clearly labeled as subtotals.
+Manual weekly rosters save versioned local history. Individual kickoff, bench,
+identity and slot locks prevent retroactive changes. Only eligible pregame/official
+forecasts supply samples; missing official forecasts stay unsupported. Same-game
+players cannot mix joint versions. Unknown availability/roles remain visible.
+
+Added loopback Host/client, trusted origin, explicit local-header and bounded-JSON
+write protection, without remote CORS access. Refactored React app entry for stable
+hot reload. Real transient 11-player verification matched an exact seven-slot lineup
+and increased supported expected points 36.0886 to 44.6866; no performance claim.
+Browser saved/loaded an explicitly labeled verification-oct21 seven-player roster,
+compared, applied and re-compared its lineup (56.91 expected, 34.18-83.54 interval,
+then 0.00 improvement against itself). No user league/roster was inferred or connected.
+No new browser errors after clean reload; earlier edit-time HMR errors were resolved.
+Details: fantasy.md and fantasy_verification_2026-10-21.json. Next: Prompt 13 paper-only
+virtual entries/ledger and corrected-result settlement.
+
+Prompt 12 final checks: 90 backend tests passed (20.89 seconds), Ruff lint/format,
+git diff whitespace and frontend strict checking/build passed. TestClient's existing
+dependency deprecation warning remains documented; no runtime failure occurred.

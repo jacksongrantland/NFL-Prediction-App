@@ -18,7 +18,7 @@ def test_empty_api_never_creates_database(tmp_path, monkeypatch):
         assert client.get("/api/games").json()["items"] == []
         assert client.get("/api/freshness").json()["last_refresh"] is None
         assert client.get("/api/forecasts/missing").status_code == 404
-        assert client.post("/api/games", json={}).status_code == 405
+        assert client.post("/api/games", json={}).status_code == 403
         assert client.get("/api/games?limit=1000").status_code == 422
     assert not root.exists()
 

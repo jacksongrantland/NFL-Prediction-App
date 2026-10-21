@@ -1,0 +1,51 @@
+{
+  "kind": "Explicit transient verification roster, not the user roster",
+  "candidate_count": 707,
+  "roster_players": 11,
+  "scoring": {
+    "version": "offensive-fantasy/1",
+    "name": "ppr",
+    "passing_yards": 0.04,
+    "passing_tds": 4,
+    "passing_interceptions": -2,
+    "rushing_yards": 0.1,
+    "rushing_tds": 6,
+    "receiving_yards": 0.1,
+    "receiving_tds": 6,
+    "receptions": null
+  },
+  "recommended": {
+    "lineup": {
+      "QB": "00-0028986",
+      "RB1": "00-0036020",
+      "RB2": "00-0036275",
+      "FLEX": "00-0032464",
+      "WR1": "00-0035298",
+      "WR2": "00-0039919",
+      "TE": "00-0036290"
+    },
+    "expected": 44.6866,
+    "p10": 25.462000000000003,
+    "p90": 65.22200000000002,
+    "standard_deviation": 16.331314963590653,
+    "draws": 100
+  },
+  "current": {
+    "lineup": {
+      "QB": "00-0028986",
+      "RB1": "00-0036020",
+      "RB2": "00-0036275",
+      "WR1": "00-0032464",
+      "WR2": "00-0035298",
+      "TE": "00-0035039",
+      "FLEX": "00-0037380"
+    },
+    "expected": 36.0886,
+    "p10": 19.506,
+    "p90": 53.34800000000002,
+    "standard_deviation": 14.745001120379747,
+    "draws": 100
+  },
+  "expected_improvement": 8.597999999999999,
+  "limitations": "Experimental offensive subtotal; fumbles, two-point bonuses, kicking and defense excluded. Unknown depth roles/availability can alter rankings."
+}
