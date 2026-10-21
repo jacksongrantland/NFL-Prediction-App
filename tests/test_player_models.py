@@ -112,3 +112,70 @@ def test_missing_actual_stat_is_not_scored_as_known_zero():
     assert len(all_reports) == 1
     assert all_reports[0]["mode"] == "unconditional" and all_reports[0]["n"] == 1
     assert all_reports[0]["mae"] == 0
+
+
+def test_capped_lag_preserves_workload_below_capacity(history):
+    games, players = prepared(history)
+    normal = forecast(players, games, history, config())
+    capped = forecast(players, games, history, {**config(), "allocation": "capped_lag"})
+    for stat in ("attempts", "carries", "targets"):
+        valid = capped[f"conditional_{stat}"].notna()
+        assert (
+            capped.loc[valid, f"conditional_{stat}"]
+            <= normal.loc[valid, f"conditional_{stat}"] + 1e-9
+        ).all()
+        assert (
+            capped.loc[valid, f"conditional_{stat}"]
+            <= players.loc[valid, f"lag_{stat}"].to_numpy() + 1e-9
+        ).all()
+
+
+def test_selection_does_not_use_future_scores():
+    from nfl_prediction.models.player_defaults import choose
+
+    assert choose([], ["QB"]) == {"QB": "lag_reference"}
+    scores = [{"position": "QB", "candidate": "opportunity", "n": 3, "loss_sum": 1}]
+    assert choose(scores, ["QB"]) == {"QB": "opportunity"}
+
+
+def test_mixed_defaults_conserve_team_opportunities(history):
+    from nfl_prediction.models.player_defaults import combine
+
+    games, players = prepared(history)
+    candidates = {
+        "capped_lag": forecast(players, games, history, {**config(), "allocation": "capped_lag"}),
+        "opportunity": forecast(players, games, history, config()),
+    }
+    output = combine(
+        candidates, {p: "opportunity" if p == "QB" else "capped_lag" for p in config()["positions"]}
+    )
+    for _, group in output.groupby(["game_id", "team_id"]):
+        for stat in ("attempts", "carries", "targets"):
+            assert (
+                abs(
+                    group[f"unconditional_{stat}"].sum()
+                    + group.iloc[0].other_opportunities[stat]
+                    - group.iloc[0].team_volume[stat]
+                )
+                < 1e-8
+            )
+
+
+def test_opponent_adjustment_ignores_future_team_results(history):
+    games, players = prepared(history)
+    options = {**config(), "allocation": "capped_lag", "opponent_context": True}
+    expected = forecast(players, games, history, options)
+    changed = copy.deepcopy(history)
+    changed["team_stats"].loc[changed["team_stats"].season.eq(2025), "attempts"] = 999
+    output = forecast(players, games, changed, options)
+    assert_frame_equal(expected.loc[expected.season.lt(2025)], output.loc[output.season.lt(2025)])
+
+
+def test_lag_reference_is_retained_with_explicit_team_volume_floor(history):
+    games, players = prepared(history)
+    result = forecast(players, games, history, {**config(), "allocation": "lag_reference"})
+    for stat in config()["stats"]:
+        pd.testing.assert_series_equal(
+            result[f"unconditional_{stat}"], result[f"baseline_{stat}"], check_names=False
+        )
+    assert result.team_volume_policy.str.contains("floored").all()

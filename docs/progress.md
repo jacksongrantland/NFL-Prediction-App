@@ -546,3 +546,40 @@ No Prompt 08 simulation, dashboard changes, fantasy, wagering, push, publication
 paid source or Windows scheduled task was implemented in this checkpoint.
 
 Checkpoint commit: `feat(ml): audit participation and evaluate offensive baselines`
+
+## Prompt 07 completed — October 21, 2026
+
+Completed the supported offensive baseline stage with explicit unknown depth roles,
+unknown availability and incomplete participation coverage. Added `models
+select-offense`: compare lag reference, capped lag, normalized opportunities and
+bounded earlier-opponent context. Nested expanding validation selects only from
+prior folds, preserves keyed OOF residuals, and reports MAE/bias/80% coverage/counts
+by position/stat/workload. No learned challenger or injury coefficient was invented.
+The observed 2025 experiment remains frozen and was not rescored.
+
+Final earlier-fold selection retains the lag reference for QB/RB/WR/TE. Weighted
+2021–2024 unconditional yardage MAE: QB passing 70.553 (n=2,625), RB rushing 20.669
+(n=6,390), WR receiving 23.251 (n=9,522), TE receiving 16.599 (n=4,572). These match
+the simpler reference; constrained/opponent alternatives did not justify replacing
+it. Preserve the inferior allocation comparison as dated evidence. This is honest
+baseline selection, not a claim of improvement or prospective readiness.
+
+Team volume is predicted before allocating workload; the retained reference has an
+explicit roster-lag floor when uncertain competing roles exceed historical volume.
+This can inflate team volume and is documented in projections. Known-Out scenarios
+redistribute work; uncertain starter promotion is never asserted. Other-player work
+is conserved. Active-conditional versus probability-weighted unconditional fields,
+missing actuals, unknown labels and unsupported cases retain prior contracts.
+
+Real command: `nfl models select-offense
+artifacts/features-verified/b25b87e6f7fa843952b65ef3d67e2589a727a6a83c339e4522b5858114ceed39
+data/participation/2a636a1923687bc8e9689c8249a3cb39e22e57c67e23dff30203341922bc9b91
+--output artifacts/player-defaults-verified`. Selected model:
+`7327b7b7cbd433d543e71b1a24b17a49ff61889f1315dbc4641f80b23a7bcc1e`;
+4,765 2026 projection rows. Dated evidence:
+`offense_default_verification_2026-10-21.json`. Prospective 2026+ performance pending;
+previews remain `recommended_for_decisions=false`.
+
+Verification: existing and new leakage, lag retention, confirmed-Out redistribution,
+unknown labels and mixed-position conservation tests pass; Ruff lint/format and
+`git diff --check` pass. Next stage: Prompt 08 joint simulation.

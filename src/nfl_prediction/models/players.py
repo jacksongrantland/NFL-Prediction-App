@@ -49,6 +49,7 @@ def forecast(
         )
     teams = teams.sort_values("eligible_after")
     output = []
+    method = config.get("allocation", "normalized")
     for (_, _), group in players.groupby(["season", "week"], sort=True):
         cutoff = group.cutoff.iloc[0]
         prior = players.loc[players.eligible_after.lt(cutoff) & players.participated.notna()]
@@ -61,6 +62,7 @@ def forecast(
             past = by_team.get(team, past_teams.iloc[:0])
             probabilities = []
             known = []
+            healthy = []
             for row in candidates.itertuples():
                 indices = player_indices.get(row.player_id, [])[-config["history_games"] :]
                 values = participation[indices]
@@ -73,6 +75,7 @@ def forecast(
                     if position_prior is not None
                     else None
                 )
+                healthy.append(probability if probability is not None else 0.0)
                 if (pd.notna(row.game_inactive) and bool(row.game_inactive)) or str(
                     row.injury_designation
                 ).lower() == "out":
@@ -91,6 +94,25 @@ def forecast(
                 )
                 if opportunity == "targets":
                     volume = min(volume, volumes["attempts"])
+                if config.get("opponent_context") and len(past_teams):
+                    opponent = candidates.opponent_team_id.iloc[0]
+                    conceded = past_teams.loc[past_teams.opponent_team_id.eq(opponent)]
+                    if len(conceded) >= 4 and prior_mean > 0:
+                        volume *= float(
+                            np.clip(
+                                smoothed(conceded, opportunity, prior_mean, config) / prior_mean,
+                                0.75,
+                                1.25,
+                            )
+                        )
+                if opportunity == "targets":
+                    volume = min(volume, volumes["attempts"])
+                if method == "lag_reference":
+                    index = config["stats"].index(opportunity)
+                    reference_total = float(np.dot(healthy, np.maximum(values[:, index], 0)))
+                    # Unknown competing depth roles can make the roster workload sum
+                    # exceed the historical team estimate. Expose that reconciliation.
+                    volume = max(volume, reference_total)
                 volumes[opportunity] = volume
                 index = config["stats"].index(opportunity)
                 weights = np.maximum(values[:, index], 0)
@@ -105,9 +127,19 @@ def forecast(
                 fraction = float(np.clip(fraction, 0, 1))
                 other_weight = expected_weights.sum() * fraction / max(1 - fraction, 1e-9)
                 denominator = expected_weights.sum() + other_weight + weights - expected_weights
+                if method == "capped_lag":
+                    # Preserve lag workload when below team capacity; only scale down.
+                    # Conditional counterfactual activates this player and holds others fixed.
+                    denominator = np.maximum(denominator, volume)
                 conditional[:, index] = np.divide(
                     volume * weights, denominator, out=np.zeros(len(weights)), where=denominator > 0
                 )
+                if method == "lag_reference":
+                    released = max(0.0, reference_total - float(expected_weights.sum()))
+                    multiplier = (
+                        1 + released / expected_weights.sum() if expected_weights.sum() > 0 else 1.0
+                    )
+                    conditional[:, index] = weights * multiplier
                 remainder[opportunity] = max(
                     0.0, volume - float(np.sum(conditional[:, index] * probabilities))
                 )
@@ -136,8 +168,17 @@ def forecast(
                     else None,
                     "availability_unknown": bool(row.availability_unknown),
                     "role_unknown": True,
+                    "allocation_method": method,
+                    "opponent_context": bool(config.get("opponent_context")),
+                    "role_policy": "Lag workload; depth order unverified; no starter guarantee.",
                     "support": "baseline_approximate" if known[i] else "unsupported_cold_start",
                     "team_volume": volumes,
+                    "team_volume_policy": (
+                        "Historical volume floored at roster lag workload; "
+                        "unresolved roles may inflate volume."
+                    )
+                    if method == "lag_reference"
+                    else "historical_team_volume",
                     "other_opportunities": remainder,
                 }
                 for j, stat in enumerate(config["stats"]):

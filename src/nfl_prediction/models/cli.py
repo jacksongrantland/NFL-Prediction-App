@@ -68,3 +68,22 @@ def preview_players(model: Path, game_id: str) -> None:
     from nfl_prediction.models.player_io import preview
 
     typer.echo(json.dumps(preview(model, game_id), indent=2))
+
+
+@app.command("select-offense")
+def select_offense(
+    features: Path,
+    participation: Path,
+    data_dir: Path = typer.Option(Path("data")),
+    output: Path = typer.Option(Path("artifacts/player-defaults")),
+) -> None:
+    """Select defaults with nested earlier folds; never rescore the observed holdout."""
+    from nfl_prediction.models.player_defaults import run
+
+    report = run(features, participation, data_dir, output)
+    typer.echo(
+        json.dumps(
+            {k: v for k, v in report.items() if k not in ("validation", "selection_scores")},
+            indent=2,
+        )
+    )

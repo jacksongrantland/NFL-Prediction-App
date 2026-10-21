@@ -1,99 +1,86 @@
-# Offensive baseline experiment — Prompt 07 in progress
+﻿# Offensive player models - Prompt 07
 
-This checkpoint adds a participation coverage audit and an evaluated offensive
-baseline experiment. It does **not** complete Prompt 07 or promote a production
-player model. The opportunity allocation experiment underperforms its lag baseline;
-unresolved depth/role context and incomplete identity/participation coverage remain
-material. Do not use these previews for lineup or paper-betting recommendations.
+Completed October 21, 2026 as an evaluated local baseline stage. Prospective
+accuracy is unproven; previews remain `recommended_for_decisions=false`.
+
+## Commands
 
 ```powershell
 .\.venv\Scripts\nfl.exe audit-participation
-.\.venv\Scripts\nfl.exe models offense-baselines artifacts/features-verified/FEATURE_ID data/participation/PARTICIPATION_ID
-.\.venv\Scripts\nfl.exe models preview-players artifacts/players/PLAYER_MODEL_ID 2026_06_ARI_LA
+.\.venv\Scripts\nfl.exe models select-offense FEATURES PARTICIPATION --output artifacts/player-defaults-verified
+.\.venv\Scripts\nfl.exe models preview-players PLAYER_MODEL GAME_ID
 ```
 
-Use emitted IDs. Defaults stay under ignored data/ and artifacts/. No source rows
-are bundled in Git. Source rights/attribution review from data_sources.md remains
-in force, including PFR/Sports Reference restrictions before any redistribution.
+Use emitted directories/IDs. Data and full model artifacts remain ignored. Source
+attribution and PFR/Sports Reference redistribution review in data_sources.md apply.
 
-## Participation coverage
+## Coverage and labels
 
-The direct audited nflverse snap Parquet adapter preserves immutable raw files,
-source manifests and historical snapshot lineage. PFR IDs map only through exact
-historical weekly-roster PFR/GSIS crosswalks, never names. Ambiguous IDs stay
-unmapped. Normalized audit directories publish after complete writes; cache reuse
-checks the normalized checksum.
+Exact historical PFR-to-GSIS roster crosswalks establish snap identity; names never
+establish identity. Missing/ambiguous mappings remain unresolved. An absent player
+gets zero offensive participation only if conservative team-game denominator,
+percentage and positive-box-score checks pass. Otherwise participation is unknown.
+A zero offensive-snap row does not establish game inactivity. Positive snaps with
+missing actual statistics remain missing and are excluded from target evaluation.
+Snap/stat contradictions are excluded rather than silently scored as zeros.
 
-For a team/game, an absent player may be labeled zero offensive participation only
-when conservative checks pass: a reconciled final game/team, offensive snap sum
-equal to 11 times the maximum player offensive snaps, consistent snap percentages,
-mapped positive-snap QB/RB/WR/TE players and matching positive box-score participants.
-These are conservative coverage checks, not authoritative proof of complete source
-history. Exceptions/identity gaps yield unknown, not zero. A present zero-snap row
-can establish zero offensive snaps without establishing game inactivity.
+The initial audit has 41,822 known and 48,075 unknown participation labels among
+89,897 feature rows. Only 25/568 2022 team-games passed the conservative checks,
+versus 512/570 in 2025. These are selected-coverage results, not full-roster accuracy.
 
-Known positive offensive snaps are distinct from a missing box-score row. Positive
-snap rows without actual stats remain missing and are excluded for those target
-metrics. Eight discovered snap/stat contradictions were marked unknown before
-participation forecasting. These conservative rules leave 48,075 of 89,897 player
-feature rows with unknown participation. Source years differ substantially; only
-25 of 568 2022 team-games pass all checks, versus 512 of 570 in 2025.
+## Forecast definitions
 
-## Experimental forecast definition
+Supported QB/RB/WR/TE targets: attempts, completions, passing yards/TD/interceptions,
+carries, rushing yards/TD, targets, receptions, receiving yards/TD. Fumbles, kicking,
+defense and other positions remain unsupported individual targets.
 
-The baseline estimates offensive participation from a player's last 16 known
-prior labels, shrunk with four observations toward prior position participation.
-Only games eligible before the frozen weekly cutoff contribute. This is a
-no-injury empirical baseline and does not estimate a questionable player's health
-or an official active probability. No history at all yields unsupported output.
+Participation uses only earlier known offensive-participation labels: last 16,
+shrunk by four toward earlier position participation. It is not an injury-health
+or official-active probability. No prior participation history means unsupported.
+Sparse personal workload uses documented position shrinkage. Unknown availability
+stays visible. Questionable has no invented coefficient. Confirmed Out/inactive
+sets unconditional participation to zero and redistributes workload. Active versus
+no-participation scenarios are explicit and carry no claimed injury probability.
 
-Team attempts/carries/targets are forecast from prior team production and league
-shrinkage before allocating opportunities. Targets cannot exceed pass attempts.
-Player lagged workload supplies share weights. Prior production per opportunity
-supplies completion/reception, yardage and touchdown rates. Negative yardage is
-permitted. An explicit other-player opportunity bucket retains omitted/unresolved
-roles and nonparticipation remainder. Conditional and probability-weighted
-unconditional expectations are separate; confirmed Out/inactive inputs set the
-unconditional participation probability to zero and redistribute opportunities.
-Questionable receives no arbitrary coefficient. Preview also exposes offensive
-participation versus no-participation counterfactual scenarios, without asserting
-an injury probability.
+Team historical volume is forecast before allocating player workload. Conditional
+production per opportunity is separated from participation-weighted unconditional
+production. Signed yardage remains valid. Other-player work preserves omitted roles.
+The lag-reference candidate floors team volume at the pregame roster lag-workload
+sum; mixed defaults share the same explicit budget. This preserves the stronger
+simple forecast but can inflate team volume when competing depth roles are unknown.
+This reconciliation is exposed in output, not interpreted as a verified depth chart.
+Backups have no guaranteed starter promotion, including when a teammate is Out.
 
-The source role/roster uncertainties remain explicit. Current role weights can
-overallocate to backups and materially underpredict starters. Opponent context is
-available in the Prompt 05 features but no validated opponent-conditioned player
-adjustment has been implemented. Individual expected statistics do not yet form
-joint valid football draws. Fumbles, kicking and defense remain unsupported.
+## Selection, intervals and residuals
 
-## Evaluation and uncertainty
+Candidates: lag reference, capped lag workload, normalized opportunity allocation,
+and capped lag with opponent context. The latter uses earlier opponent-conceded
+team opportunities, requires four games, shrinks toward league volume and bounds
+the adjustment to 0.75-1.25. It asserts no learned individual matchup/injury effect.
 
-Earlier expanding folds report MAE, bias, sample count, lag-baseline comparison
-and empirical 80% interval coverage by position/stat and low/medium/high prior
-workload buckets. Prior workload buckets use pregame expected opportunities,
-not actual future workload. Interval residuals fit earlier training rows only;
-validation residuals are separately retained for future joint simulation work.
-Intervals attached to projection rows are limited to cutoffs after the calibration
-training cutoff. Unconditional residuals include known nonparticipation zeros;
-unknown participation/actuals are excluded, never silently zero-filled.
+Selection minimizes absolute error divided by training-only per-stat mean absolute
+actual (floor one), pooled within position. Each expanding validation fold selects
+using earlier folds only; the first uses the lag reference. Final defaults use
+2021-2024 validation. All four positions retained the simpler lag reference.
+No learned player-production challenger was needed to replace a stronger baseline.
 
-The fixed experiment's 2025 result was recorded without parameter changes after
-inspection. Example unconditional MAEs: QB passing yards 122.86 (lag baseline
-73.17), RB rushing yards 21.10 (lag 20.12), WR receiving yards 22.05 (lag 21.68),
-TE receiving yards 15.89 (lag 15.39). Eligible sample counts differ by stat/position.
-The sample is incomplete and selected by coverage, so participation Brier 0.0432
-on 7,342 eligible rows must not be advertised as full-roster participation quality.
-See offense_baseline_verification_2026-10-15.json for dated counts and metrics.
+Training-only empirical residual intervals report nominal 80% coverage, MAE, bias
+and sample count by position/stat and pregame workload bucket. Keyed nested OOF
+predictions/residuals are saved for simulation. These marginal intervals do not form
+joint valid football draws. The observed 2025 experiment remains frozen; new defaults
+are not rescored on it. New model prospective evaluation eligibility is 2026 onward.
 
-The manifest remains baseline_candidate, and preview explicitly returns
-recommended_for_decisions false. No learned player-production challenger was
-added to conceal the bad result. The simpler lag comparator remains the reference.
+## Evidence
 
-## Remaining Prompt 07 work
+The initial normalized opportunity experiment underperformed its lag comparator:
+2025 QB passing-yard MAE 122.864 versus 73.169, RB rushing 21.103 versus 20.116,
+WR receiving 22.047 versus 21.677, TE receiving 15.886 versus 15.394. It was never
+promoted. See offense_baseline_verification_2026-10-15.json.
 
-Establish a defensible default player forecast from earlier-fold evidence, retain
-the simpler baseline where it wins, and resolve/represent depth-role allocation
-and sparse coverage before production promotion. Add and validate opponent context
-where coverage supports it. Keep the existing 2025 experimental result frozen;
-do not repeatedly tune against that final season. Any additional development must
-use earlier validation folds and declare new prospective evaluation eligibility
-honestly. Complete this stage before starting Prompt 08's joint simulation.
+The October 21 capped/opponent comparison also failed to replace the simpler
+reference; see offense_allocation_comparison_2026-10-21.json. Final nested 2021-2024
+reference MAEs: QB passing 70.553 (n=2,625), RB rushing 20.669 (n=6,390), WR receiving
+23.251 (n=9,522), TE receiving 16.599 (n=4,572). These match the comparator and are
+approximate historical results, not a claim of improved or prospective accuracy.
+See offense_default_verification_2026-10-21.json. Full workload reports and residuals
+remain in the checksummed local artifact. There are 4,765 2026 projection rows.
