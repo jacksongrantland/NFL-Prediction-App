@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './style.css'
 import { useResource, RequestState } from './api'
 import { FantasyPanel } from './fantasy'
+import { PaperPanel } from './paper'
 
 type Distribution = { mean: number; p10: number; p90: number }
 type Game = { game_id: string; season: number; week: number; home_team_id: string; away_team_id: string; kickoff_at: string | null; home_score: number | null; away_score: number | null; result_status: string; forecast_count: number; lock_status: string }
@@ -102,6 +103,7 @@ export default function App() {
     </section>
     {current && <GameDetail key={current.game_id} game={current} />}
     <FantasyPanel season={season} week={Number(week) || 7} />
+    <PaperPanel season={season} week={Number(week) || 7} />
     <EvaluationPanel />
     <footer>Local research workspace · No real-money wagering · Unknown is never treated as healthy or as a known zero.</footer>
   </main>

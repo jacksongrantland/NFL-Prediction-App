@@ -22,3 +22,4 @@ figure { margin: 28px 0; max-width: 660px; }figcaption { font-size: .88rem; marg
 td small { display: block; color: #92a7c2; font-size: .65rem; margin-top: 5px; }
 input:not([type=checkbox]) { border: 1px solid #40546b; color: #e9eef7; background: #15263b; padding: 11px 14px; border-radius: 6px; font: inherit; font-size: .85rem; min-width: 0; }
 .roster-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; max-height: 260px; overflow-y: auto; }.roster-picker button { font-size: .76rem; padding: 8px 12px; }.lineup-slots { display: grid; grid-template-columns: repeat(auto-fit,minmax(170px,1fr)); gap: 12px; margin: 24px 0; }.lineup-slots select { max-width: 100%; }.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }.primary { background: #b5f36f; color: #152516; border-color: #b5f36f; font-weight: 650; }
+.metrics strong.compact { font-size: 1.15rem; }

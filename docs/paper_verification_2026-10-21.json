@@ -1,0 +1,44 @@
+{
+  "kind": "Explicitly labeled virtual verification account; no real money",
+  "account_id": "verification-oct21",
+  "balance_minor": 99000,
+  "settled_count": 0,
+  "ledger": [
+    {
+      "id": 1,
+      "account_id": "verification-oct21",
+      "entry_id": null,
+      "created_at": "2026-10-21T23:18:47.864611+00:00",
+      "kind": "seed",
+      "amount_minor": 100000,
+      "evidence_id": null,
+      "balance_minor": 100000
+    },
+    {
+      "id": 2,
+      "account_id": "verification-oct21",
+      "entry_id": "698a66aa4f324346aebb7dccff453432",
+      "created_at": "2026-10-21T23:18:57.445744+00:00",
+      "kind": "stake",
+      "amount_minor": -1000,
+      "evidence_id": null,
+      "balance_minor": 99000
+    }
+  ],
+  "entries": [
+    {
+      "id": "698a66aa4f324346aebb7dccff453432",
+      "forecast_id": "49e0f89498c20f9500e13bc65d7d8fa92d071f8d53b156ccdf622f203f12f9ba",
+      "line_id": "67f0a068185497a857911dccfcfebd123959e17611dc4f7fa3e28144722cee70",
+      "stake_minor": 1000,
+      "status": "pending"
+    }
+  ],
+  "checks": [
+    "real pregame forecast and hypothetical manually typed -110 odds",
+    "1000.00 virtual-credit seed",
+    "10.00 virtual-credit stake",
+    "990.00 virtual-credit available balance",
+    "no invented settled ROI"
+  ]
+}

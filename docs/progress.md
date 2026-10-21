@@ -711,3 +711,28 @@ virtual entries/ledger and corrected-result settlement.
 Prompt 12 final checks: 90 backend tests passed (20.89 seconds), Ruff lint/format,
 git diff whitespace and frontend strict checking/build passed. TestClient's existing
 dependency deprecation warning remains documented; no runtime failure occurred.
+
+## Prompt 13 completed - October 21, 2026
+
+Added immutable manual moneyline/spread/total lines, Decimal odds/payout arithmetic,
+integer minor virtual credits, serialized stake checks, duplicate prevention and
+versioned actual/schedule-based settlement. Push/tie/cancellation/reschedule policies
+are explicit. Corrections append compensating events and can expose virtual debt;
+no balance rewrite or duplicate settlement is allowed. Ledger/entry records refer
+to exact immutable forecast/line/evidence IDs. Refresh maintenance settles existing
+entries only; it never wagers. No real-money/payment/account/odds-feed integration
+exists. All HTTP writes remain loopback-protected.
+
+Dashboard includes virtual account initialization, hypothetical manual odds and
+joint-sample probability/EV estimates with Monte Carlo limitations, entries,
+bankroll chart, ROI/count and settlement audit. Browser verification used a clearly
+labeled verification-oct21 virtual account: seeded 1000.00, entered 10.00 pending,
+remaining 990.00, zero settled entries/ROI. The default paper account remains empty.
+No real funds, markets or settled performance were invented. Evidence:
+paper_verification_2026-10-21.json; policies: paper_ledger.md.
+
+95 backend tests passed (21.38 seconds); five targeted paper tests passed after the
+final cutoff correction, including conservation, pushes, cutoff/duplicate rejection,
+refunds, immutable rows and negative correction debt. Ruff lint/format and frontend
+strict build passed. Next: Prompt 14 coverage audit and evaluated kicking/team
+special-teams/defense additions, keeping unsupported roles explicit.

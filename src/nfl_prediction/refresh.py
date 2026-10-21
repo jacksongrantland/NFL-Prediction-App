@@ -305,7 +305,10 @@ def maintenance(config: RefreshConfig, *, clock=None) -> dict:
                 minutes=config.lock_minutes
             ):
                 locks.append(store.lock(game["game_id"], minutes_before=config.lock_minutes))
+        from nfl_prediction.paper import reconcile as settle_paper
+
         return {
+            "paper": settle_paper(config.data_dir),
             "locks_checked": len(locks),
             "results": reconcile(config.data_dir, config.season, clock=clock),
         }
