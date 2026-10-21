@@ -665,3 +665,23 @@ rosters and incompatible schemas. Next: Prompt 11 read API and dashboard.
 Prompt 10 final verification: 82 backend tests passed (23.23 seconds); Ruff lint,
 format and git diff whitespace checks passed. All commits and generated forecast
 history remain local.
+
+## Prompt 11 completed - October 21, 2026
+
+Added typed read API, read-only SQLite access, bounded pagination/filters, game/player/
+team forecasts, versions, revision-paired actual errors, evaluation and freshness.
+Requests perform no migrations, model fitting, downloads or mutation. Added responsive
+league/Cowboys schedule and game dashboard with score comparison SVG, player means/
+intervals, conditional toggle, model/version audit, support/unknown/stale labels and
+separate historical calibration/accuracy/error display. Empty/loading/error/retry
+states are explicit; past games never acquire fake predictions.
+
+Browser verified against the real local API: 14 week-7 games, Cowboys at Eagles,
+55 player/other rows, saved versions, QB filtering, conditional toggle, a completed
+Cowboys game showing actual 13-23 with no eligible forecast, and a 390px responsive
+layout; viewport restored afterward. Browser console had no errors. Dated evidence:
+dashboard_verification_2026-10-21.json. 84 backend tests passed (21.68 seconds), Ruff
+lint/format and whitespace checks passed, and frontend strict checking/build passed.
+One dependency deprecation warning is recorded for Starlette's current TestClient
+httpx integration; it does not change app behavior. Next: Prompt 12 fantasy scoring
+and eligible pregame lineup comparison.

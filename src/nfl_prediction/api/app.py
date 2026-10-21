@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from nfl_prediction import __version__
+from nfl_prediction.api.routes import router
 
 
 class HealthResponse(BaseModel):
@@ -15,6 +16,7 @@ class HealthResponse(BaseModel):
 
 
 app = FastAPI(title="NFL Prediction API", version=__version__)
+app.include_router(router)
 
 
 @app.get("/api/health", response_model=HealthResponse)

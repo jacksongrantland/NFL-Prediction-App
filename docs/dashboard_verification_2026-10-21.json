@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-21",
+  "week_7_games": 14,
+  "game_id": "2026_07_DAL_PHI",
+  "version_id": "49e0f89498c20f9500e13bc65d7d8fa92d071f8d53b156ccdf622f203f12f9ba",
+  "player_count": 55,
+  "team_response": [
+    {
+      "team_id": "PHI",
+      "expected_score": 22.96,
+      "score_p10": 10.0,
+      "score_p90": 36.0,
+      "win_probability": 0.57,
+      "tie_probability": 0.0,
+      "scope": "Joint-sample scoring; individual kicking/defense unsupported"
+    },
+    {
+      "team_id": "DAL",
+      "expected_score": 20.23,
+      "score_p10": 6.9,
+      "score_p90": 33.10000000000001,
+      "win_probability": 0.43,
+      "tie_probability": 0.0,
+      "scope": "Joint-sample scoring; individual kicking/defense unsupported"
+    }
+  ],
+  "official_forecast_id": null,
+  "browser_verified": [
+    "Cowboys filter",
+    "QB filter",
+    "conditional toggle",
+    "real actual/missing forecast state",
+    "390px responsive layout",
+    "no console errors"
+  ],
+  "checks": {
+    "backend_tests": 84,
+    "frontend_build": "passed"
+  }
+}
