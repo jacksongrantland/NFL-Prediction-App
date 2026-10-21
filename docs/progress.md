@@ -583,3 +583,31 @@ previews remain `recommended_for_decisions=false`.
 Verification: existing and new leakage, lag retention, confirmed-Out redistribution,
 unknown labels and mixed-position conservation tests pass; Ruff lint/format and
 `git diff --check` pass. Next stage: Prompt 08 joint simulation.
+
+## Prompt 08 completed - October 21, 2026
+
+Wrote simulation_contract.md before implementation, then added seeded shared-environment
+team-volume/player-allocation simulation, explicit other-player buckets, correlated
+passing/receiving yards and TDs, signed yards, sacks/net passing, aggregate fumbles,
+kicking/miscellaneous scoring, two-point plays and approximate overtime. Scores,
+win probabilities and marginal/active-conditional player summaries come from the
+same retained local draws. Raw game estimates and simulated means remain separate.
+
+`nfl models simulate-week GAME_MODEL PLAYER_MODEL FEATURES 2024 1 --validation
+--count 500` ran all 16 real validation games in 99.915 seconds. All 8,000 game draws
+passed football accounting validation. Brier 0.421717, log loss 0.608410, margin MAE
+8.4085 and 80% score interval coverage 90.625% (32 team outcomes). Dated evidence:
+`simulation_verification_2026-10-21.json`. This is a small validation diagnostic,
+not calibrated/prospective performance; broad QB intervals and unresolved roles
+remain documented. A subsequent CLI smoke run uses 100 draws and validates before
+publication; no forecast is published as pregame history by simulation commands.
+
+Seeded tests cover score reconciliation, receiver/passer equality, opportunity
+constraints, opposing sacks, postseason ties, Out players, repeatability and
+rejection of corrupt draws. Full samples remain ignored; no sources were purchased,
+pushed or published. Next: Prompt 09 immutable forecast versions and result history.
+
+Prompt 08 checks: 72 backend tests passed (excluding the next-stage history tests);
+Ruff lint/format and git diff whitespace checks passed. The final 100-draw CLI
+smoke covered all 16 games in 42.114 seconds; validation Brier 0.409688, log loss
+0.595905, score coverage 93.75%. Sampling counts/configs are reported separately.

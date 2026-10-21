@@ -87,3 +87,32 @@ def select_offense(
             indent=2,
         )
     )
+
+
+@app.command("simulate-week")
+def simulate_week(
+    game_model: Path,
+    player_model: Path,
+    features: Path,
+    season: int,
+    week: int,
+    count: int = typer.Option(500, min=100, max=5000),
+    seed: int = typer.Option(2026),
+    validation: bool = typer.Option(False),
+    output: Path = typer.Option(Path("artifacts/simulations")),
+) -> None:
+    """Generate joint local samples or evaluate earlier OOF weeks; never publish."""
+    from nfl_prediction.models.simulation_io import run
+
+    report = run(
+        game_model,
+        player_model,
+        features,
+        output,
+        season=season,
+        week=week,
+        count=count,
+        seed=seed,
+        validation=validation,
+    )
+    typer.echo(json.dumps(report, indent=2))

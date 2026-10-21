@@ -1,0 +1,449 @@
+{
+  "simulation_id": "9ec9a19eb0e79b3f3e578af73e40ac1520ba1c1b8fb38aca137cffe72a12cee1",
+  "game_model_id": "7e7b55c635aa8de465f6efa2dc48138dc58f28d489d3f3f1547b4abe009d3956",
+  "player_model_id": "7327b7b7cbd433d543e71b1a24b17a49ff61889f1315dbc4641f80b23a7bcc1e",
+  "feature_id": "b25b87e6f7fa843952b65ef3d67e2589a727a6a83c339e4522b5858114ceed39",
+  "source_snapshots": {
+    "2020": "3559a47d93709cbf5e41392ec2e05eb6c3deae72a76d41dc1692c9999bea6f1d",
+    "2021": "20d0e5f854654517009b4c17b8423d7fd2bd22318d8cd6a05c9cb43cb38bc400",
+    "2022": "49e64fd524025c82ecc6051fbade4d25e4b3757ee6d1858e8a90a5ec84023adf",
+    "2023": "2462d080e4335c7eae6ab21e7101aaec134f10db3de0fa202e7fa57fbd265f5a",
+    "2024": "7e0731d4216c340a3054074f507e99048c292595b078252129df06e14eff7a57",
+    "2025": "75d06c9f2e0d2d41e2c1cb735ce413b0b938140b42d6319506b51b31569d7276",
+    "2026": "1134a20ea6995acbc3de659dffbd07e0deb1558b022dc478f320a939c1512b7d"
+  },
+  "seed": 2026,
+  "count": 500,
+  "season": 2024,
+  "week": 1,
+  "games": 16,
+  "kind": "retrospective_validation",
+  "recommended_for_decisions": false,
+  "accounting_version": "simulation/1",
+  "evaluation": {
+    "n": 16,
+    "brier": 0.421717,
+    "log_loss": 0.6084100397426453,
+    "margin_mae": 8.4085,
+    "score_80_interval_coverage": 0.90625,
+    "reliability": [
+      {
+        "low": 0.2,
+        "n": 3,
+        "predicted": 0.36066666666666664,
+        "observed": 0.6666666666666666
+      },
+      {
+        "low": 0.4,
+        "n": 7,
+        "predicted": 0.5037142857142858,
+        "observed": 0.5714285714285714
+      },
+      {
+        "low": 0.6,
+        "n": 4,
+        "predicted": 0.691,
+        "observed": 0.75
+      },
+      {
+        "low": 0.8,
+        "n": 2,
+        "predicted": 0.841,
+        "observed": 1.0
+      }
+    ],
+    "player_metrics": [
+      {
+        "position": "QB",
+        "stat": "attempts",
+        "n": 39,
+        "mae": 8.816615384615385,
+        "bias": 3.0885128205128205,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "QB",
+        "stat": "carries",
+        "n": 39,
+        "mae": 2.2942564102564105,
+        "bias": -0.4441025641025641,
+        "interval_coverage": 0.7692307692307693
+      },
+      {
+        "position": "QB",
+        "stat": "completions",
+        "n": 39,
+        "mae": 6.014461538461539,
+        "bias": -1.5619487179487175,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "QB",
+        "stat": "passing_interceptions",
+        "n": 39,
+        "mae": 0.7422564102564101,
+        "bias": 0.23805128205128206,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "QB",
+        "stat": "passing_tds",
+        "n": 39,
+        "mae": 0.8125641025641025,
+        "bias": -0.549076923076923,
+        "interval_coverage": 0.8461538461538461
+      },
+      {
+        "position": "QB",
+        "stat": "passing_yards",
+        "n": 39,
+        "mae": 73.59789743589742,
+        "bias": -5.174615384615384,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "QB",
+        "stat": "receiving_tds",
+        "n": 39,
+        "mae": 5.1282051282051286e-05,
+        "bias": 5.1282051282051286e-05,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "QB",
+        "stat": "receiving_yards",
+        "n": 39,
+        "mae": 0.08738461538461537,
+        "bias": -0.03189743589743589,
+        "interval_coverage": 0.9743589743589743
+      },
+      {
+        "position": "QB",
+        "stat": "receptions",
+        "n": 39,
+        "mae": 0.0316923076923077,
+        "bias": -0.019384615384615382,
+        "interval_coverage": 0.9743589743589743
+      },
+      {
+        "position": "QB",
+        "stat": "rushing_tds",
+        "n": 39,
+        "mae": 0.2314871794871795,
+        "bias": -0.16738461538461538,
+        "interval_coverage": 0.8461538461538461
+      },
+      {
+        "position": "QB",
+        "stat": "rushing_yards",
+        "n": 39,
+        "mae": 14.459743589743589,
+        "bias": -4.306205128205129,
+        "interval_coverage": 0.6410256410256411
+      },
+      {
+        "position": "QB",
+        "stat": "targets",
+        "n": 39,
+        "mae": 0.03507692307692308,
+        "bias": -0.015897435897435894,
+        "interval_coverage": 0.9743589743589743
+      },
+      {
+        "position": "RB",
+        "stat": "attempts",
+        "n": 97,
+        "mae": 0.010329896907216495,
+        "bias": 0.010329896907216495,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "RB",
+        "stat": "carries",
+        "n": 97,
+        "mae": 4.003505154639176,
+        "bias": 0.49414432989690726,
+        "interval_coverage": 0.7010309278350515
+      },
+      {
+        "position": "RB",
+        "stat": "completions",
+        "n": 97,
+        "mae": 0.004556701030927835,
+        "bias": 0.004556701030927835,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "RB",
+        "stat": "passing_interceptions",
+        "n": 97,
+        "mae": 0.00018556701030927837,
+        "bias": 0.00018556701030927837,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "RB",
+        "stat": "passing_tds",
+        "n": 97,
+        "mae": 8.247422680412371e-05,
+        "bias": 8.247422680412371e-05,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "RB",
+        "stat": "passing_yards",
+        "n": 97,
+        "mae": 0.04894845360824743,
+        "bias": 0.04894845360824743,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "RB",
+        "stat": "receiving_tds",
+        "n": 97,
+        "mae": 0.058123711340206184,
+        "bias": -0.0015876288659793794,
+        "interval_coverage": 0.9690721649484536
+      },
+      {
+        "position": "RB",
+        "stat": "receiving_yards",
+        "n": 97,
+        "mae": 9.676103092783507,
+        "bias": -1.9804329896907213,
+        "interval_coverage": 0.8762886597938144
+      },
+      {
+        "position": "RB",
+        "stat": "receptions",
+        "n": 97,
+        "mae": 1.0908453608247421,
+        "bias": -0.19303092783505157,
+        "interval_coverage": 0.9278350515463918
+      },
+      {
+        "position": "RB",
+        "stat": "rushing_tds",
+        "n": 97,
+        "mae": 0.2794020618556701,
+        "bias": -0.1812577319587629,
+        "interval_coverage": 0.8762886597938144
+      },
+      {
+        "position": "RB",
+        "stat": "rushing_yards",
+        "n": 97,
+        "mae": 20.85364948453608,
+        "bias": 2.3278762886597937,
+        "interval_coverage": 0.7319587628865979
+      },
+      {
+        "position": "RB",
+        "stat": "targets",
+        "n": 97,
+        "mae": 1.2337113402061857,
+        "bias": 0.11127835051546386,
+        "interval_coverage": 0.9278350515463918
+      },
+      {
+        "position": "TE",
+        "stat": "attempts",
+        "n": 65,
+        "mae": 0.04116923076923077,
+        "bias": 0.04116923076923077,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "TE",
+        "stat": "carries",
+        "n": 65,
+        "mae": 0.07596923076923075,
+        "bias": 0.01738461538461539,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "TE",
+        "stat": "completions",
+        "n": 65,
+        "mae": 0.020523076923076925,
+        "bias": 0.020523076923076925,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "TE",
+        "stat": "passing_interceptions",
+        "n": 65,
+        "mae": 0.0012615384615384615,
+        "bias": 0.0012615384615384615,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "TE",
+        "stat": "passing_tds",
+        "n": 65,
+        "mae": 0.0006461538461538462,
+        "bias": 0.0006461538461538462,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "TE",
+        "stat": "passing_yards",
+        "n": 65,
+        "mae": 0.23664615384615387,
+        "bias": 0.23664615384615387,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "TE",
+        "stat": "receiving_tds",
+        "n": 65,
+        "mae": 0.11926153846153846,
+        "bias": -0.024307692307692298,
+        "interval_coverage": 0.9384615384615385
+      },
+      {
+        "position": "TE",
+        "stat": "receiving_yards",
+        "n": 65,
+        "mae": 14.807261538461539,
+        "bias": 6.7608,
+        "interval_coverage": 0.9076923076923077
+      },
+      {
+        "position": "TE",
+        "stat": "receptions",
+        "n": 65,
+        "mae": 1.1580615384615385,
+        "bias": 0.37,
+        "interval_coverage": 0.9384615384615385
+      },
+      {
+        "position": "TE",
+        "stat": "rushing_tds",
+        "n": 65,
+        "mae": 0.0012307692307692308,
+        "bias": 0.0012307692307692308,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "TE",
+        "stat": "rushing_yards",
+        "n": 65,
+        "mae": 0.4987384615384615,
+        "bias": -0.10169230769230773,
+        "interval_coverage": 0.9846153846153847
+      },
+      {
+        "position": "TE",
+        "stat": "targets",
+        "n": 65,
+        "mae": 1.4766769230769232,
+        "bias": 0.5769846153846153,
+        "interval_coverage": 0.9230769230769231
+      },
+      {
+        "position": "WR",
+        "stat": "attempts",
+        "n": 139,
+        "mae": 0.01451798561151079,
+        "bias": 0.01451798561151079,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "WR",
+        "stat": "carries",
+        "n": 139,
+        "mae": 0.3332086330935252,
+        "bias": -0.08581294964028777,
+        "interval_coverage": 0.9424460431654677
+      },
+      {
+        "position": "WR",
+        "stat": "completions",
+        "n": 139,
+        "mae": 0.008258992805755396,
+        "bias": 0.008258992805755396,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "WR",
+        "stat": "passing_interceptions",
+        "n": 139,
+        "mae": 0.00034532374100719427,
+        "bias": 0.00034532374100719427,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "WR",
+        "stat": "passing_tds",
+        "n": 139,
+        "mae": 0.0003165467625899281,
+        "bias": 0.0003165467625899281,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "WR",
+        "stat": "passing_yards",
+        "n": 139,
+        "mae": 0.09576978417266188,
+        "bias": 0.09576978417266188,
+        "interval_coverage": 1.0
+      },
+      {
+        "position": "WR",
+        "stat": "receiving_tds",
+        "n": 139,
+        "mae": 0.23431654676258987,
+        "bias": -0.1237841726618705,
+        "interval_coverage": 0.8705035971223022
+      },
+      {
+        "position": "WR",
+        "stat": "receiving_yards",
+        "n": 139,
+        "mae": 23.806690647482014,
+        "bias": 6.241798561151079,
+        "interval_coverage": 0.8345323741007195
+      },
+      {
+        "position": "WR",
+        "stat": "receptions",
+        "n": 139,
+        "mae": 1.5417553956834533,
+        "bias": 0.37812949640287774,
+        "interval_coverage": 0.9064748201438849
+      },
+      {
+        "position": "WR",
+        "stat": "rushing_tds",
+        "n": 139,
+        "mae": 0.02325179856115108,
+        "bias": -0.01945323741007194,
+        "interval_coverage": 0.9784172661870504
+      },
+      {
+        "position": "WR",
+        "stat": "rushing_yards",
+        "n": 139,
+        "mae": 2.203856115107914,
+        "bias": -0.6028776978417266,
+        "interval_coverage": 0.8992805755395683
+      },
+      {
+        "position": "WR",
+        "stat": "targets",
+        "n": 139,
+        "mae": 2.1791079136690645,
+        "bias": 0.2550215827338129,
+        "interval_coverage": 0.7985611510791367
+      }
+    ]
+  },
+  "elapsed_seconds": 99.915,
+  "files": {
+    "evaluation.json": "474f4cee1a0b1a168868973a6c05dc4b122be7e8b50bc7a89ac0913f2e258940",
+    "player_draws.parquet": "7889bbef8027208826a7ebd63804a9daeb3d9f0e65f30c8e7e72fbdcba4dedd6",
+    "summaries.json": "81febb5f060ad6c0e7cf072aea0c4ff5084877462f3a00d38e867e6958fc306f",
+    "team_draws.parquet": "6e6478e4d3b19da6a6b25345287a942f8d9ee724182ab543db9a7b39ba82ffcc"
+  }
+}
