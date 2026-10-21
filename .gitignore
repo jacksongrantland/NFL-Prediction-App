@@ -17,3 +17,4 @@ dist/
 coverage/
 .coverage
 *.egg-info/
+config/refresh.local.json

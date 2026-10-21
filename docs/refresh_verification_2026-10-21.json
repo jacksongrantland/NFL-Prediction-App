@@ -1,0 +1,62 @@
+{
+  "run_id": "4c0d1de252a94685801aaf8f5a202862",
+  "started_at": "2026-10-21T22:50:29.429106+00:00",
+  "finished_at": "2026-10-21T22:51:55.323908+00:00",
+  "status": "succeeded",
+  "elapsed_seconds": 85.901,
+  "steps": [
+    {
+      "step": "sources",
+      "status": "succeeded",
+      "result": {
+        "mode": "cached_verified_sources",
+        "warning": "Freshness checks still apply"
+      }
+    },
+    {
+      "step": "features",
+      "status": "succeeded",
+      "result": {
+        "feature_id": "c83640eb21d8b19a96ead5db6c4b69634bace9c1fb0cc611acd226c8868d44dc"
+      }
+    },
+    {
+      "step": "frozen_model_inference",
+      "status": "succeeded",
+      "result": {
+        "player_inference_id": "a7e99181144331f39f55276be7276f58cab8aee31d298e48f5ddb3d035671cd3"
+      }
+    },
+    {
+      "step": "joint_prediction",
+      "status": "succeeded",
+      "result": {
+        "simulation_ids": [
+          "c038368016aa7ff1faff4194462e08c33ccc0e75e1710e022c7cfdded132c9a3"
+        ]
+      }
+    },
+    {
+      "step": "publication",
+      "status": "succeeded",
+      "result": {
+        "forecast_count": 14,
+        "skipped": []
+      }
+    },
+    {
+      "step": "lock_and_reconcile",
+      "status": "succeeded",
+      "result": {
+        "locks_checked": 93,
+        "results": {
+          "season": 2026,
+          "completed_games_reconciled": 93,
+          "source_snapshots": {
+            "2026": "d93653da0303e87f878d41c5d814266140aee21daa36c7e3be6935810a0636c0"
+          }
+        }
+      }
+    }
+  ]
+}

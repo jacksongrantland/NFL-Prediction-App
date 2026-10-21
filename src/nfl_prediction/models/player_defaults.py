@@ -223,3 +223,85 @@ def run(features: Path, participation: Path, root: Path, output: Path) -> dict:
     (staging / "manifest.json").write_text(json.dumps(report, indent=2) + "\n")
     staging.rename(destination)
     return report
+
+
+def infer(features: Path, participation: Path, root: Path, model_path: Path, output: Path) -> dict:
+    """Reuse frozen selected baseline definitions with fresh history, without selection/training."""
+    from nfl_prediction.models.player_io import load_manifest
+
+    model = load_manifest(model_path)
+    eligibility = json.loads((features / "eligibility.json").read_text())
+    if model["config"] != eligibility["config"]:
+        raise ValueError("Player feature definition differs from selected baseline")
+    if model["promotion_status"] != "local_baseline_default":
+        raise ValueError("Player baseline is not selected for local inference")
+    for name, checksum in eligibility["files"].items():
+        if file_hash(features / name) != checksum:
+            raise ValueError("Feature integrity failure")
+    audit = json.loads((participation / "audit.json").read_text())
+    if file_hash(participation / "snaps.parquet") != audit["sha256"]:
+        raise ValueError("Participation integrity failure")
+    history, lineage = load_history(root)
+    if lineage != eligibility["source_snapshots"]:
+        raise ValueError("Features and active sources differ")
+    games = pd.read_parquet(features / "games.parquet")
+    players = pd.read_parquet(features / "players.parquet").merge(
+        games[["game_id", "eligible_after"]], on="game_id", validate="many_to_one"
+    )
+    players["participated"] = labels(players, pd.read_parquet(participation / "snaps.parquet"))
+    # Preserve contradictions as unknown even when newer box scores revise old facts.
+    actual = players[["game_id", "team_id", "player_id"]].merge(
+        history["player_stats"][["game_id", "team_id", "player_id", *model["config"]["stats"]]],
+        on=["game_id", "team_id", "player_id"],
+        how="left",
+        validate="one_to_one",
+    )
+    contradicted = players.participated.eq(0).fillna(False) & actual[
+        model["config"]["stats"]
+    ].fillna(0).ne(0).any(axis=1)
+    players.loc[contradicted, "participated"] = pd.NA
+    methods = set(model["selected"].values())
+    candidates = {
+        name: forecast(
+            players,
+            games,
+            history,
+            {**model["config"], **CANDIDATES[name], "forecast_after": eligibility["live_cutoff"]},
+        )
+        for name in methods
+    }
+    projections = combine(candidates, model["selected"])
+    now = pd.Timestamp(eligibility["live_cutoff"])
+    upcoming = games.loc[games.kickoff_at.gt(now), "game_id"]
+    projections = projections.loc[projections.game_id.isin(upcoming)].copy()
+    identity = json_hash(
+        {
+            "model": model["player_model_id"],
+            "feature": eligibility["feature_id"],
+            "participation": audit["participation_id"],
+            "code": file_hash(Path(__file__)),
+            "forecast_code": file_hash(Path(__file__).with_name("players.py")),
+        }
+    )
+    destination = output / identity
+    if destination.exists():
+        return load_manifest(destination)
+    staging = output / f".staging-{uuid4().hex}"
+    staging.mkdir(parents=True)
+    projections.to_parquet(staging / "projections.parquet", index=False)
+    report = {
+        **{k: model[k] for k in ("config", "selected", "promotion_status", "limitations")},
+        "player_model_id": identity,
+        "selected_model_id": model["player_model_id"],
+        "feature_id": eligibility["feature_id"],
+        "source_snapshots": lineage,
+        "participation_id": audit["participation_id"],
+        "participation_policy": "Verified cached snaps; later unobserved games stay unknown",
+        "kind": "frozen_baseline_inference",
+        "recommended_for_decisions": False,
+        "files": {p.name: file_hash(p) for p in staging.iterdir()},
+        "path": str(destination.resolve()),
+    }
+    (staging / "manifest.json").write_text(json.dumps(report, indent=2) + "\n")
+    staging.rename(destination)
+    return report

@@ -632,3 +632,36 @@ repeatable safe local refresh orchestration without installing a scheduled task.
 Prompt 09 full verification: 78 backend tests passed (21.35 seconds), Ruff lint and
 format checks passed, and git diff whitespace validation passed. No remote/push,
 payment, deployment, or scheduled task was created.
+
+## Prompt 10 completed - October 21, 2026
+
+Added configurable `nfl refresh`, per-host free-source pacing, OS single-run lock,
+atomic step logs/publication boundaries, daily/pregame schedule gating and catch-up
+maintenance. Frozen evaluated/promoted game models and selected baseline definitions
+are reused; refresh never retrains, reselects or re-evaluates the holdout. Schema and
+checksum mismatches stop publication. Source failures preserve prior snapshots and
+prevent dependent publication. Current observed rosters and now-cutoffs apply only
+to future games, including partially started weeks. Later unknown snap coverage is
+not fabricated. Unknown availability remains visible. Fresh schedule/roster inputs
+and pre-kickoff generation are required for publication.
+
+Added scripts/refresh.ps1, config/refresh.example.json and local_refresh.md with
+manual Windows Task Scheduler setup, catch-up/offline limits and recovery. No task
+was installed. The local config is ignored. Explicit local game promotion used the
+existing completed evaluation; no new model fitting or paid service was used.
+
+Real free 2026 ingestion (network allowed after sandbox socket restriction) downloaded
+11,039,249 bytes and validated 93 completed games in 3.775 seconds. Current schedule,
+roster and injury observations were captured; one unresolved roster row stayed
+rejected. Two full cached-source refreshes completed in 85.599/85.901 seconds with
+100 draws/game, each generating 14 genuinely pregame local versions, checking 93
+past-game locks and reconciling 93 results. They never invented past pregame history.
+The second run applies an explicit per-game horizon filter. Scheduled-mode cached
+check returned `not_due` while safely running maintenance. Dated evidence:
+refresh_verification_2026-10-21.json. Four new fake-clock/adapter tests cover schedule
+windows, late/stale publication refusal, source failure boundaries, prospective-only
+rosters and incompatible schemas. Next: Prompt 11 read API and dashboard.
+
+Prompt 10 final verification: 82 backend tests passed (23.23 seconds); Ruff lint,
+format and git diff whitespace checks passed. All commits and generated forecast
+history remain local.

@@ -203,3 +203,26 @@ def serve() -> None:
 
 if __name__ == "__main__":
     app()
+
+
+@app.command("refresh")
+def refresh_local(
+    config: Path = typer.Option(Path("config/refresh.local.json")),
+    cached_sources: bool = typer.Option(False),
+    scheduled: bool = typer.Option(False),
+) -> None:
+    """Refresh local inputs and infer with frozen models; never install a task or retrain."""
+    import json
+
+    from nfl_prediction.refresh import RefreshConfig, refresh
+
+    settings = RefreshConfig.model_validate_json(config.read_text(encoding="utf-8-sig"))
+    try:
+        typer.echo(
+            json.dumps(
+                refresh(settings, fetch_sources=not cached_sources, scheduled=scheduled), indent=2
+            )
+        )
+    except (ValueError, OSError, RuntimeError) as error:
+        typer.echo(f"Refresh failed; inspect data/refresh/runs: {error}", err=True)
+        raise typer.Exit(1) from error

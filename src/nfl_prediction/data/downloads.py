@@ -8,6 +8,7 @@ from dataclasses import asdict, dataclass
 from http.client import IncompleteRead
 from pathlib import Path
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
@@ -38,8 +39,13 @@ class Download:
 
 
 class Downloader:
-    def __init__(self, root: Path, db: Database):
+    _last_host_request: dict[str, float] = {}
+
+    def __init__(self, root: Path, db: Database, *, request_interval: float = 0.5):
         self.root, self.db = root, db
+        if not 0 <= request_interval <= 60:
+            raise ValueError("Request interval must be between zero and 60 seconds")
+        self.request_interval = request_interval
         self.memo: dict[str, Download] = {}
         self.downloaded_bytes = 0
         self.cache_hits = 0
@@ -73,6 +79,13 @@ class Downloader:
         result = None
         for attempt in range(3):
             try:
+                host = urlsplit(url).netloc
+                delay = self.request_interval - (
+                    time.monotonic() - self._last_host_request.get(host, 0)
+                )
+                if delay > 0:
+                    time.sleep(delay)
+                self._last_host_request[host] = time.monotonic()
                 with urlopen(Request(url, headers=headers), timeout=45) as response:
                     digest, size = hashlib.sha256(), 0
                     with temporary.open("wb") as stream:

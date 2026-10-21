@@ -50,8 +50,10 @@ def forecast(
     teams = teams.sort_values("eligible_after")
     output = []
     method = config.get("allocation", "normalized")
-    for (_, _), group in players.groupby(["season", "week"], sort=True):
+    for _, group in players.groupby(["season", "week", "cutoff"], sort=True):
         cutoff = group.cutoff.iloc[0]
+        if config.get("forecast_after") and cutoff < pd.Timestamp(config["forecast_after"]):
+            continue
         prior = players.loc[players.eligible_after.lt(cutoff) & players.participated.notna()]
         priors = prior.groupby("position").participated.mean().to_dict()
         player_indices = prior.groupby("player_id", sort=False).indices

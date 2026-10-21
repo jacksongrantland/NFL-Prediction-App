@@ -1,0 +1,14 @@
+{
+  "season": 2026,
+  "game_model": "artifacts/models/7e7b55c635aa8de465f6efa2dc48138dc58f28d489d3f3f1547b4abe009d3956",
+  "player_model": "artifacts/player-defaults-verified/7327b7b7cbd433d543e71b1a24b17a49ff61889f1315dbc4641f80b23a7bcc1e",
+  "participation": "data/participation/2a636a1923687bc8e9689c8249a3cb39e22e57c67e23dff30203341922bc9b91",
+  "count": 100,
+  "horizon_days": 8,
+  "request_interval_seconds": 0.5,
+  "daily_hour_chicago": 8,
+  "pregame_minutes": [90, 30, 10],
+  "minimum_refresh_minutes": 10,
+  "lock_minutes": 5,
+  "max_stale_hours": 36
+}

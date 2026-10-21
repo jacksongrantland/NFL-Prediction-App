@@ -72,7 +72,7 @@ def player_lags(history: np.ndarray, priors: np.ndarray, config: dict) -> dict:
 
 
 def build_frames(
-    history: dict, config: dict, *, observation_reader=None
+    history: dict, config: dict, *, observation_reader=None, live_cutoff=None
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     games = history["games"].copy()
     games["kickoff_at"] = pd.to_datetime(games.kickoff_at, utc=True)
@@ -85,6 +85,11 @@ def build_frames(
         hours=config["completion_delay_hours"]
     )
     games["cutoff"] = games.groupby(["season", "week"]).kickoff_at.transform("min")
+    if live_cutoff is not None:
+        now = pd.Timestamp(live_cutoff)
+        if now.tzinfo is None:
+            raise ValueError("Live cutoff must be timezone-aware")
+        games.loc[games.kickoff_at.gt(now), "cutoff"] = now
     context = games.loc[
         games.result_status.eq("final"), ["game_id", "eligible_after", "kickoff_at"]
     ]
@@ -109,7 +114,7 @@ def build_frames(
     roster = history["weekly_rosters"]
     roster_groups = roster.groupby(["season", "week", "game_type", "team_id"], sort=False).indices
     game_features, player_features = [], []
-    for (_, _), group in games.groupby(["season", "week"], sort=True):
+    for _, group in games.groupby(["season", "week", "cutoff"], sort=True):
         cutoff = group.cutoff.iloc[0]
         prior_teams = team_history.loc[team_history.eligible_after.lt(cutoff)]
         prior_players = stats.loc[stats.eligible_after.lt(cutoff)]
@@ -162,6 +167,15 @@ def build_frames(
                 opponent_allowed = smoothed(opponent_history, "allowed", league_points, config)
                 indices = roster_groups.get((game.season, game.week, game.game_type, team), [])
                 candidates = roster.iloc[indices]
+                prospective_roster = (
+                    live_cutoff is not None
+                    and game.kickoff_at > now
+                    and observations.get("roster_freshness") == "observed"
+                )
+                if prospective_roster:
+                    candidates = pd.DataFrame(observations.get("roster", []))
+                    if candidates.empty:
+                        candidates = roster.iloc[:0]
                 candidates = candidates.loc[candidates.position.isin(config["positions"])]
                 for player in candidates.drop_duplicates("player_id").itertuples():
                     player_indices = by_player.get(player.player_id, [])
@@ -181,7 +195,12 @@ def build_frames(
                         else None,
                         "role_unknown": True,
                         "roster_status": player.roster_status,
-                        "roster_eligibility": "approximate_corrected_weekly_roster",
+                        "roster_eligibility": "prospective_observed_roster"
+                        if prospective_roster
+                        else "approximate_corrected_weekly_roster",
+                        "roster_batch_id": observations.get("roster_batch_id")
+                        if prospective_roster
+                        else None,
                         "availability_unknown": player.player_id not in avail
                         or avail[player.player_id].get("freshness") != "observed",
                     }
@@ -250,6 +269,7 @@ def prepare(
     seasons: list[int] | None = None,
     config_path: Path = DEFAULT_CONFIG,
     include_observations: bool = True,
+    live_cutoff=None,
 ) -> dict:
     start = time.perf_counter()
     config = json.loads(config_path.read_text())
@@ -277,7 +297,10 @@ def prepare(
         return as_of(season, game, cutoff, root)
 
     games, players = build_frames(
-        history, config, observation_reader=reader if include_observations else None
+        history,
+        config,
+        observation_reader=reader if include_observations else None,
+        live_cutoff=live_cutoff,
     )
     splits = split_manifest(games)
     output.mkdir(parents=True, exist_ok=True)
@@ -304,6 +327,7 @@ def prepare(
     (staging / "splits.json").write_text(json.dumps(splits, indent=2) + "\n")
     report = {
         "feature_id": identity,
+        "live_cutoff": pd.Timestamp(live_cutoff).isoformat() if live_cutoff is not None else None,
         "config": config,
         "source_snapshots": lineage,
         "availability_batch_ids": sorted(players.availability_batch_id.dropna().unique().tolist())

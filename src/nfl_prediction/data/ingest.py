@@ -43,10 +43,10 @@ def json_hash(value: dict) -> str:
 
 
 @contextmanager
-def ingestion_lock(root: Path):
+def ingestion_lock(root: Path, filename: str = "ingestion.lock"):
     """OS lock releases on process exit/crash; the harmless lock file may remain."""
     root.mkdir(parents=True, exist_ok=True)
-    with (root / "ingestion.lock").open("a+b") as handle:
+    with (root / filename).open("a+b") as handle:
         handle.seek(0, os.SEEK_END)
         if handle.tell() == 0:
             handle.write(b"0")

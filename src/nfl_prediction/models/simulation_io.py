@@ -26,6 +26,7 @@ def run(
     count: int = 500,
     seed: int = 2026,
     validation: bool = False,
+    game_ids: list[str] | None = None,
 ) -> dict:
     start = time.perf_counter()
     model, game_manifest = load(game_model)
@@ -43,6 +44,8 @@ def run(
         raise ValueError("Player projections must use this feature snapshot")
     games = pd.read_parquet(features / "games.parquet")
     games = games.loc[games.season.eq(season) & games.week.eq(week)].copy()
+    if game_ids is not None:
+        games = games.loc[games.game_id.isin(game_ids)]
     if games.empty:
         raise ValueError("No games for requested week")
     if validation:
@@ -56,6 +59,11 @@ def run(
         if games.empty:
             raise ValueError("Requested games are not earlier validation predictions")
     else:
+        cutoff = eligibility.get("live_cutoff")
+        if cutoff:
+            games = games.loc[games.kickoff_at.gt(pd.Timestamp(cutoff))]
+        if games.empty:
+            raise ValueError("No eligible upcoming games for this week")
         estimates = predict(model, games.reset_index(drop=True))
         games["home_expected"] = estimates.home_expected.to_numpy()
         games["away_expected"] = estimates.away_expected.to_numpy()
@@ -100,6 +108,7 @@ def run(
             "count": count,
             "seed": seed,
             "validation": validation,
+            "game_ids": sorted(game_ids) if game_ids is not None else None,
             "code": file_hash(Path(__file__)),
             "simulation_code": file_hash(Path(__file__).with_name("simulation.py")),
         }
