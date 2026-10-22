@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-21",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.13.2",
+  "setup_scope": "Existing Python/Node runtimes; new dependency environments and initially empty caches",
+  "cold_dependency_setup": {
+    "python": {
+      "kind": "clean environment and initially empty download cache",
+      "elapsed_seconds": 11.2814713
+    },
+    "frontend": {
+      "kind": "clean frontend and initially empty download cache",
+      "elapsed_seconds": 3.1709267
+    }
+  },
+  "game_training_wrapper_seconds": 0.835,
+  "game_training_internal_seconds": 0.807,
+  "game_training_peak_working_set_bytes": 222736384,
+  "game_training_test_evaluated": false,
+  "refresh_seconds": 62.215,
+  "refresh_peak_working_set_bytes": 847671296,
+  "refresh_draws_per_game": 100,
+  "refresh_run_id": "9f0d8c3482064db49822f5b733b43a97",
+  "refresh_steps": [
+    {
+      "step": "sources",
+      "status": "succeeded",
+      "result": {
+        "mode": "cached_verified_sources",
+        "warning": "Freshness checks still apply"
+      }
+    },
+    {
+      "step": "features",
+      "status": "succeeded",
+      "result": {
+        "feature_id": "e712f17e31768a7f092cd1943fb39ef28917705d3c05e6e1646d050e521d2ce5",
+        "path": "artifacts\\refresh\\features\\e712f17e31768a7f092cd1943fb39ef28917705d3c05e6e1646d050e521d2ce5"
+      }
+    },
+    {
+      "step": "frozen_model_inference",
+      "status": "succeeded",
+      "result": {
+        "player_inference_id": "a07cf78afe1ab169bf32d38f16413194ce84d123bda881a3ffdb81a516d46995"
+      }
+    },
+    {
+      "step": "joint_prediction",
+      "status": "succeeded",
+      "result": {
+        "simulation_ids": [
+          "513f980b4651ed16d80e388cbe425bec3599dc34e18a17196f935554c76b51f4"
+        ]
+      }
+    },
+    {
+      "step": "publication",
+      "status": "succeeded",
+      "result": {
+        "forecast_ids": [
+          "ba63f74062c44d8d291f31bf430bcea29d17c14fe5ef36d9c3948066928dbde0",
+          "49d2d1934e3c16a25d2d917e8a3da571ecddc4a7802d9c7b7c082b57459e21ad",
+          "b1f5259607cf033ef1069dd54119edd32fb78ef5b2fd550eed062a4df88417a3",
+          "bdf175fec85d11cc3e0e5df584a543cee5a50fc410f53b5f0f81f3332cacafd4",
+          "1213e4f11f726eda6b53ec22fa87992f89e48a18f98bc3d83748a791ba5e7623",
+          "54c71d9ad2d4da9cc91165b9f399104f7619ad5961b473984f2c66da01f060fc",
+          "1325bf83068f4dce1667fccf3c845f9460a3dacb4139f38e67cae8e7da1c8c48",
+          "aa69c2854ab8cfbb57d422c1e7b1702223dea3be08e0ca76c7f5b49b899ac633",
+          "a17404615f39ebbe2883d9a134664ab6bc244e2bf7cf4993bdacb0a6bb5f2e0b",
+          "5b0c73e93736eb822289ce2602211ae571df17061ac2003156af6c0b13bc71b7",
+          "9e33838e48eeefafd80d66db814d550b5d6956e9355242b6cb45e5fbb9f74ce1",
+          "29f73e25d842730aac4eb9457e1eb008db639346d97082cdf01ce1f7b340d5c1",
+          "e2ca2951727fa386f3651bfb421389b645aec4c81da94a78c1c2c3f3411e632f",
+          "b7ff482854de265c7606553509674708e9bb84515b428b6b2202c639fddab9e8"
+        ],
+        "skipped": []
+      }
+    },
+    {
+      "step": "lock_and_reconcile",
+      "status": "succeeded",
+      "result": {
+        "paper": {
+          "settled_or_corrected": 0,
+          "pending_or_unchanged": 1
+        },
+        "locks_checked": 93,
+        "results": {
+          "season": 2026,
+          "completed_games_reconciled": 93,
+          "source_snapshots": {
+            "2026": "d93653da0303e87f878d41c5d814266140aee21daa36c7e3be6935810a0636c0"
+          }
+        }
+      }
+    }
+  ],
+  "data_bytes": 208735356,
+  "artifact_bytes_including_reproduction_scratch": 1203871823,
+  "measurement_policy": "Wall clock includes IO/function work after imports. Peak memory is process peak, not incremental model allocation. No network data fetch or holdout rescore.",
+  "scratch_cleanup": {
+    "removed_generated_scratch": [
+      "artifacts\\repro-venv-20261021",
+      "artifacts\\repro-uv-cache-20261021",
+      "artifacts\\repro-frontend-20261021",
+      "artifacts\\repro-npm-cache-20261021"
+    ],
+    "preserved": "Published snapshots, forecast samples, original virtual environment and user data"
+  },
+  "artifact_logical_bytes_after_scratch_cleanup": 240078131,
+  "data_logical_bytes_after_review": 208735356
+}

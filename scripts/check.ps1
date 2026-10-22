@@ -9,6 +9,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Backend tests failed.' }
     Push-Location frontend
     try {
+        & npm.cmd run format:check
+        if ($LASTEXITCODE -ne 0) { throw 'Frontend formatting failed.' }
         & npm.cmd run build
         if ($LASTEXITCODE -ne 0) { throw 'Frontend checks/build failed.' }
     } finally { Pop-Location }

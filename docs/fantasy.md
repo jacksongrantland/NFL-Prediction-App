@@ -50,3 +50,7 @@ real fantasy performance. See fantasy_verification_2026-10-21.json. Browser test
 saved/loaded the explicitly named `verification-oct21` roster, calculated 56.91
 expected supported points and interval 34.18-83.54, applied its lineup, then displayed
 0.00 change against that saved identical alternative. No live league was changed.
+
+The final local boundary also rejects untrusted Host headers on read requests to
+prevent host rebinding. Comparisons must use the saved roster representation; a
+POST cannot bypass saved kickoff locks by supplying an unsaved alternative body.

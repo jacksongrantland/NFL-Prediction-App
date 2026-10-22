@@ -1,5 +1,11 @@
 # Progress
 
+Current checkpoint: prompts 01-15 implemented locally as of October 21, 2026.
+The dated historical checkpoints below are retained; later completion entries
+supersede their earlier in-progress status. Models remain experimental, and
+unsupported roles/preseason remain explicit. Existing origin configuration is
+preserved; no push, purchase, deployment or scheduled-task installation was made.
+
 ## Prompt 01 — Bootstrap and architecture
 
 Completed October 14, 2026. User committed as `1c24de8`; the user subsequently
@@ -770,3 +776,68 @@ Prompt 14 final checks: 100 backend tests passed (16.02 seconds), Ruff lint/form
 frontend strict build and git diff whitespace checks passed. Full datasets/models
 remain ignored and local. No new source purchases, remote, push, publication or
 scheduled task was created.
+
+
+## Prompt 15 completed - October 21, 2026
+
+Reviewed the complete local app and corrected two release-level eligibility gaps:
+comparisons must use the saved roster rather than bypassing kickoff locks with an
+unsaved body; rescheduled locked versions remain immutable but are excluded from
+scored/new-lineup eligibility. Added trusted Host protection for reads/writes and
+regressions for untrusted hosts/oversized JSON. Replaced deprecated TestClient usage
+with the existing HTTPX ASGI transport, avoiding a new Python dependency/warning.
+Added a generated-fixture end-to-end flow spanning ingestion, causal baseline,
+joint accounting, publication/lock, fantasy, virtual entry, actual correction and API.
+
+Added pinned Prettier formatting/readable frontend source, EditorConfig/LF policy,
+expanded check.ps1, and a Windows/Linux CI definition with official action commit
+SHAs verified against public tags. CI uses locked installs and generated fixtures,
+read-only repository permissions and no deployment steps. It has not run remotely:
+the new workflow was not pushed. An existing origin remote was discovered during
+review and preserved unchanged; no remote was created/changed or pushed by this work.
+
+Clean dependency setup with existing runtimes and initially empty download caches:
+Python 49 packages in 11.281s; frontend 27 packages in 3.171s. Both clean environments
+passed their relevant checks; latest-source clean Python passed all 104 tests in
+19.17s, and the clean frontend passed formatting/strict production build. The full
+trusted check.ps1 passed all 104 tests in 19.26s, Ruff and frontend formatting/build.
+Default Windows script policy blocks ordinary .ps1 invocation, so verification used
+one process-scoped ExecutionPolicy Bypass; no user/machine policy was changed.
+Direct equivalent commands remain documented. The new end-to-end test passed.
+
+An explicit benchmark trained a separate game candidate in 0.835s wall/0.807s internal
+without rescoring the held-out test, peak process working set 222,736,384 bytes.
+A full 14-game/100-draw cached-source refresh ran in 62.215s, peak process working
+set 847,671,296 bytes. Earlier expanded refresh was 42.507s; these are measured
+runs under variable local IO/load, not a guaranteed speedup or runtime. Current data
+file bytes 208,735,356; retained artifact bytes 240,078,131 after disposable setup
+scratch cleanup. Full earlier ingestion and current free download timings retain
+their actual cache/byte scope. Measurements: release_measurements_2026-10-21.json.
+
+Saved/visually inspected real dashboard/detail screenshots; rewrote README with
+supported scope, setup/run/reproduce/check commands, architecture, dated metrics,
+learned parameters versus configuration, failed experiments, limitations and
+operations. Added decisions.md and resume.md with claims grounded in actual local
+results. Updated contracts/history/fantasy/recovery docs. A pattern review of release
+text found no potential credential/private-key strings; it is not a formal security
+audit. Data/models/secrets remain ignored. One unreferenced development draft with
+outdated code metadata was marked unusable and quarantined after proving no saved
+forecast referenced it. Published models/samples, user data and original environment
+were preserved; four generated reproduction environments/caches were removed only
+after resolved-path/link checks. Details: release_review_2026-10-21.json.
+
+Final supported checkpoint is a local research release, not proof of prospective
+accuracy, betting advantage, complete player coverage or hosting readiness. Individual
+kicker/defender/returner roles, full DST fantasy, unsupported scoring contributions
+and preseason remain explicitly unsupported as allowed by the coverage stage.
+Authentication, consistent backups, durable hosted jobs, concurrency/load testing,
+secret management and source redistribution review are future hosting prerequisites.
+No money, external messages, real wagers, remote creation, push, publication,
+deployment or Windows scheduled task was performed. All numbered implementation
+prompts are complete for the documented supported baseline scope.
+
+Local prompt commits before this final release checkpoint:
+07 d68031b; 08 2d30235; 09 46c57bc; 10 4d4c61c; 11 a3d26b3;
+12 c11801f; 13 8371280; 14 97f12e2. Prompt 15 is the following release commit.
+
+Final release verification: 105 tests passed in 18.62 seconds; Ruff lint/format, pinned frontend formatting, strict TypeScript and Vite build all passed. Added a regression ensuring the authoritative forecast remains visible and scored when outside the latest 20 versions. Clean-environment verification above remains the earlier 104-test checkpoint.

@@ -185,6 +185,15 @@ def entry_forecast(root: Path, entry: Entry, now: datetime):
         if not locked[0]["forecast_id"]:
             raise ValueError("Game has no official eligible forecast; lineup stays locked")
         version = reads.forecast(root, locked[0]["forecast_id"])
+        schedule = reads.query(
+            root,
+            "SELECT kickoff_at FROM forecast_schedule WHERE game_id=? ORDER BY id DESC LIMIT 1",
+            (entry.game_id,),
+        )
+        if schedule and timestamp(schedule[0]["kickoff_at"]) != timestamp(version["kickoff_at"]):
+            raise ValueError(
+                "Locked game was rescheduled; no eligible comparison for the new kickoff"
+            )
     elif now >= kickoff:
         raise ValueError("Started game has no official eligible forecast; lineup stays locked")
     else:

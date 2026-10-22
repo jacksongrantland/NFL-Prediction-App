@@ -123,10 +123,29 @@ def audit(root: Path, game_id: str):
 
     forecasts, revisions = versions(root, game_id), actuals(root, game_id)
     locks = query(root, "SELECT * FROM forecast_locks WHERE game_id=?", (game_id,))
-    official = next((v for v in forecasts if locks and v["id"] == locks[0]["forecast_id"]), None)
+    official = (
+        forecast(root, locks[0]["forecast_id"]) if locks and locks[0]["forecast_id"] else None
+    )
+    if official and all(version["id"] != official["id"] for version in forecasts):
+        # Keep the authoritative version available even beyond the recent-version page.
+        forecasts = [official, *forecasts]
     errors = []
+    eligibility = "no_forecast"
     if official:
-        for revision in revisions:
+        from nfl_prediction.storage.forecasts import timestamp
+
+        schedule = query(
+            root,
+            "SELECT kickoff_at FROM forecast_schedule WHERE game_id=? ORDER BY id DESC LIMIT 1",
+            (game_id,),
+        )
+        eligibility = (
+            "rescheduled_after_lock"
+            if schedule
+            and timestamp(schedule[0]["kickoff_at"]) != timestamp(official["kickoff_at"])
+            else "eligible"
+        )
+        for revision in revisions if eligibility == "eligible" else []:
             if revision["status"] != "cancelled":
                 errors.append(
                     {
@@ -149,4 +168,5 @@ def audit(root: Path, game_id: str):
         "locks": [json.loads(r["payload_json"]) for r in locks],
         "actuals": revisions,
         "errors": errors,
+        "eligibility_status": eligibility,
     }

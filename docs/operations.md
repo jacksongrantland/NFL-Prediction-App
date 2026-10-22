@@ -136,3 +136,40 @@ today's corrected source files do not establish their original availability.
 Use tests' tiny generated fixtures for offline development; they are explicitly
 synthetic and never inserted into the real data store. No raw NFL files, models,
 credentials, photos, or logos should be committed to Git.
+
+## Local release recovery checkpoint - October 21, 2026
+
+The CLI refresh now records each step in data/refresh/runs and publishes last_success
+only after every step succeeds. A failed source/schema/hash/dependency step stops
+later publication; prior snapshots and forecasts survive. Retry after fixing that
+specific cause. OS locks release on process exit; a remaining lock file alone is
+not proof that a writer is still running. Inspect process ownership before stopping
+anything. Never delete data or rewrite history to make an integrity check pass.
+
+A late catch-up run can select a genuinely saved eligible pregame forecast. It
+cannot generate a fake earlier version. Missing forecasts are permanently recorded
+at locking. A changed kickoff after lock preserves the record but excludes it from
+scored/lineup eligibility; paper entries void under the documented reschedule rule.
+Corrections append actual/ledger revisions, including a possible negative virtual
+balance. No automatic task, real wager, remote or deployment was installed.
+
+Read API requests use read-only SQLite and do not migrate/create a database. Local
+writes require loopback Host/client, trusted origin/local header and bounded JSON;
+untrusted Hosts are rejected for reads too. Do not expose the dev servers publicly.
+For development reload use `--reload-dir src/nfl_prediction` so artifact/cache trees
+are not repeatedly scanned. Normal `nfl serve` does not require reload.
+
+Backups must preserve a consistent SQLite state plus the immutable files referenced
+by its active pointers/forecasts. Stop writers or use a consistent SQLite backup
+operation; merely copying one live SQLite file or relying on a sync folder is not
+an application-verified backup. Test restoration to a separate directory before
+replacing the active store. Hosted backup/auth/job/concurrency/source-rights work
+remains a separate future project, not a hidden deployment step.
+
+Clean locked Python/frontend dependency environments with empty caches passed on
+October 21. A transient Windows cache-rename warning was retried automatically;
+setup completed successfully. Reproduction scratch environments/caches can be
+removed after verification, but never remove artifacts referenced by live forecast
+versions: fantasy/paper audits depend on those exact samples. The release keeps
+measurements and screenshots; disposable reproduction directories are not source
+or user data.

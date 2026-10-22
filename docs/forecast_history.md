@@ -1,4 +1,4 @@
-﻿# Forecast history and actual revisions
+# Forecast history and actual revisions
 
 `nfl forecasts publish PAYLOAD.json` records local pregame history, not an external
 publication. Generation time comes from the writer. Required payload fields:
@@ -46,3 +46,16 @@ postponement before/after kickoff, missing forecasts, offset/naive times, backda
 immutable rows, retrospective exclusion and corrected results. Real local
 reconciliation imported 79 completed 2026 games with snapshot
 1134a20ea6995acbc3de659dffbd07e0deb1558b022dc478f320a939c1512b7d.
+
+## Reschedule eligibility hardening
+
+If an already locked game's newly observed kickoff differs, its immutable lock and
+versions remain visible but the audit reports `rescheduled_after_lock`, omits scored
+errors, and blocks new fantasy comparison eligibility. It never silently unlocks or
+transfers that frozen prediction to a different kickoff. Paper follows its explicit
+void/refund policy. This conservative case is covered by a fake-clock regression.
+
+The game detail audit resolves its official version directly by ID and includes it
+alongside the recent version page. More than 20 later/late versions cannot hide the
+authoritative forecast or change which actual errors are scored. The separate
+version-list endpoint remains paginated. A 26-version fake-clock regression covers it.

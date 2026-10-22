@@ -115,3 +115,55 @@ def test_history_tables_reject_mutation_and_retrospective_never_locks(tmp_path):
             store.publish({**payload, "kickoff_at": (clock[0] + timedelta(days=1)).isoformat()})
     finally:
         store.close()
+
+
+def test_locked_reschedule_keeps_audit_but_is_not_scored_as_new_game(tmp_path):
+    store, clock, payload = fixture(tmp_path)
+    try:
+        version = store.publish(payload)
+        clock[0] += timedelta(minutes=55)
+        assert store.lock("synthetic")["forecast_id"] == version
+        clock[0] += timedelta(minutes=1)
+        store.schedule("synthetic", clock[0] + timedelta(days=1))
+        store.result(
+            "synthetic",
+            {"home_score": 21, "away_score": 17},
+            status="settled",
+            source_revision="rescheduled-final",
+        )
+        audit = store.audit("synthetic")
+        assert audit["eligibility_status"] == "rescheduled_after_lock" and audit["errors"] == []
+        assert store.lock("synthetic")["forecast_id"] == version
+    finally:
+        store.close()
+
+
+def test_official_audit_survives_recent_version_pagination(tmp_path, monkeypatch):
+    from http_client import LocalClient
+
+    from nfl_prediction.api.app import app
+
+    store, clock, payload = fixture(tmp_path)
+    try:
+        official = store.publish(payload)
+        kickoff = clock[0] + timedelta(hours=1)
+        for index in range(25):
+            clock[0] = kickoff - timedelta(minutes=4) + timedelta(seconds=index)
+            store.publish(payload)
+        clock[0] = kickoff + timedelta(hours=1)
+        assert store.lock("synthetic")["forecast_id"] == official
+        store.result(
+            "synthetic",
+            {"home_score": 21, "away_score": 20},
+            status="settled",
+            source_revision="final",
+        )
+        monkeypatch.setenv("NFL_DATA_DIR", str(tmp_path))
+        with LocalClient(app) as client:
+            audit = client.get("/api/games/synthetic").json()
+            assert audit["official_forecast_id"] == official
+            assert audit["errors"][0]["forecast_id"] == official
+            assert any(v["id"] == official for v in audit["versions"])
+            assert client.get("/api/games/synthetic/versions?limit=20").json()["total"] == 26
+    finally:
+        store.close()

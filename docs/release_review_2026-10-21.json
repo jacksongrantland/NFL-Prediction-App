@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-21",
+  "text_files_scanned": 126,
+  "potential_secret_findings": [],
+  "scope": "Git-tracked and nonignored release text; pattern review, not a formal security audit",
+  "remote_names": [
+    "origin"
+  ],
+  "backend_tests": 105,
+  "clean_environment_tests": "104 passed in 19.17s",
+  "check_script": "105 tests, Ruff and frontend formatting/strict build passed; see progress.md for final timing",
+  "powershell_policy": "Default script execution is disabled; trusted check script verified with a one-process Bypass, without changing user/machine policy",
+  "ci": "Pinned Windows/Linux definition; official tags verified; no push or remote run",
+  "existing_origin": "Preserved unchanged; no remote created or changed",
+  "reproduction_scratch": "Four generated environments/caches removed after verified path checks",
+  "quarantined_draft": "Unreferenced player development draft marked unusable and moved to artifacts/quarantine; published forecasts reference the verified model",
+  "screenshots": [
+    "docs/screenshots/dashboard.jpg",
+    "docs/screenshots/game-detail.jpg"
+  ],
+  "latest_additional_regression": "Authoritative forecast is resolved directly and included even outside the most recent 20 versions",
+  "documentation_links": "Verified local README/architecture/decision/resume link targets exist"
+}

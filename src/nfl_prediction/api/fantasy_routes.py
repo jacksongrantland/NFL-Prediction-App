@@ -120,6 +120,8 @@ def compare(body: ComparisonRequest):
         if not saved_path.exists():
             raise ValueError("Save the manual roster before comparing")
         previous = fantasy.Roster.model_validate(json.loads(saved_path.read_text())["roster"])
+        if previous.model_dump() != body.roster.model_dump():
+            raise ValueError("Save roster changes before comparing")
         now = datetime.now(UTC)
         kickoffs = {
             p.player_id: fantasy.entry_forecast(Settings().data_dir, p, now)["kickoff_at"]

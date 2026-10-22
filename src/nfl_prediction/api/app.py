@@ -4,6 +4,7 @@ from typing import Literal
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from nfl_prediction import __version__
 from nfl_prediction.api.fantasy_routes import router as fantasy_router
@@ -23,6 +24,9 @@ app.include_router(router)
 app.include_router(fantasy_router)
 app.include_router(paper_router)
 app.middleware("http")(local_writes)
+app.add_middleware(
+    TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "::1"], www_redirect=False
+)
 
 
 @app.get("/api/health", response_model=HealthResponse)

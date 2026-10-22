@@ -144,3 +144,31 @@ Full ingestion must compute its own complete checksum; a prefix digest is not on
   unless that field's semantics and complete revision history are verified.
 - No-injury baseline remains valid scope when injury context is unknown, with
   input missingness made visible. Unavailable data is never silently synthesized.
+
+## Implemented forecast/tool contracts (October 21, 2026)
+
+Forecast versions now store writer generation time, input cutoff, kickoff snapshot,
+source IDs/freshness, model versions, simulation seed/config and supported summaries.
+Local publication is distinct from external publication. Official locks reference
+one exact eligible version or explicitly record no eligible forecast. Actuals and
+paper settlements keep revisions; a reschedule never silently reopens a lock.
+A locked version whose kickoff differs from the newly observed schedule stays
+archived but is excluded from scored/lineup eligibility.
+
+Simulation/1 preserves baseline football accounting; optional simulation/2 adds
+source-evaluated aggregate FG/PAT attempt/make and defensive sack/INT inputs. These
+are not individual kicker/defender outputs or complete DST fantasy. Point forecasts
+remain float64 means; draws contain integer counts and signed integer yardage.
+Per-draw passing/receiving/scoring/opposing-defense identities are tested. Quantile
+intervals are empirical and never summed to reconcile totals.
+
+Fantasy scoring version offensive-fantasy/1 is a supported offensive subtotal.
+Missing fumble/two-point/kicking/defensive contributions are excluded and labeled,
+not silently invented as actual zeros. Individual kickoff and saved-roster locks
+apply to comparisons as well as writes. Same-game players use one joint version.
+
+Paper credits use integer minor units (100 per virtual credit); odds/payouts use
+Decimal with documented minor-unit rounding. Entries close before kickoff, debit
+available credit once and reference immutable line/forecast IDs. Corrections append
+compensating events; pending/settled/refunded states remain distinct. No real-money
+or automatic wagering path exists.

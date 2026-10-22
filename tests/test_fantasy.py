@@ -110,12 +110,12 @@ def test_risk_preference_is_explicit_and_infeasibility_is_reported():
 
 
 def test_local_write_boundary_rejects_remote_origin_and_missing_header(tmp_path, monkeypatch):
-    from fastapi.testclient import TestClient
+    from http_client import LocalClient
 
     from nfl_prediction.api.app import app
 
     monkeypatch.setenv("NFL_DATA_DIR", str(tmp_path))
-    with TestClient(app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000)) as client:
+    with LocalClient(app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000)) as client:
         path = "/api/fantasy/rosters/test"
         assert client.post(path, json={}).status_code == 403
         assert (

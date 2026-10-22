@@ -242,10 +242,18 @@ class ForecastStore:
             results = rows("result_revisions", "recorded_at, rowid")
             schedule = rows("forecast_schedule", "id")
         errors = []
+        eligibility = "no_forecast"
         if locks and locks[0]["forecast_id"]:
             version = next(f for f in forecasts if f["id"] == locks[0]["forecast_id"])
-            summary = json.loads(version["payload_json"])["summary"]
-            for revision in results:
+            payload = json.loads(version["payload_json"])
+            summary = payload["summary"]
+            eligibility = (
+                "rescheduled_after_lock"
+                if schedule
+                and timestamp(schedule[-1]["kickoff_at"]) != timestamp(payload["kickoff_at"])
+                else "eligible"
+            )
+            for revision in results if eligibility == "eligible" else []:
                 actual = json.loads(revision["payload_json"])
                 if actual["status"] == "cancelled":
                     continue
@@ -266,6 +274,7 @@ class ForecastStore:
             "results": results,
             "schedule": schedule,
             "errors": errors,
+            "eligibility_status": eligibility,
         }
 
     @staticmethod

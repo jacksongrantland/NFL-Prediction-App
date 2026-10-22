@@ -1,69 +1,76 @@
 # Architecture
 
-A single local repository contains a Python prediction engine/API and a React,
-TypeScript, Vite frontend. Bootstrap, source discovery, and historical ingestion
-exist today. Evaluated game baselines/models and unpublished previews now exist.
-Scheduled jobs, published/locked forecasts, fantasy and betting tools do not.
+The local application implements stages 01-15 with explicitly experimental models
+and limited supported outputs. Python/FastAPI owns data/model/history operations;
+React/TypeScript/Vite supplies a loopback dashboard. Free sources and local CPU are
+the only runtime requirements beyond the installed software.
 
-Prompt 04 adds prospective schedule/roster/availability observations and strict
-local cutoff queries; see `pregame_snapshots.md` for selection policies.
+## Module boundaries
 
-## Current modules
+- data/audit.py discovers source coverage; downloads.py handles immutable caching,
+  per-host pacing, retries and checksums; normalize.py/ingest.py validate and publish
+  complete season snapshots atomically.
+- data/snapshots.py records prospective schedule/roster/availability knowledge with
+  observed_at and recorded_at. Unknown historical publication remains unknown.
+- data/participation.py audits exact PFR/GSIS identity and conservative snap coverage.
+- features/pipeline.py freezes completed prior-game features. Historical weekly
+  cutoffs stay fixed; live future games may use now and a current observed roster.
+- evaluation/harness.py defines chronological season folds and training-only transforms.
+- models/games.py fits/evaluates/promotes CPU game baselines/regularized candidates.
+- models/players.py and player_defaults.py provide empirical participation,
+  opportunity/production baselines and earlier-fold default selection/inference.
+- models/extended.py audits raw row lineage and evaluates team kicking/limited defense.
+- models/simulation.py and simulation_io.py own seeded shared environments, football
+  accounting, joint samples, summaries, integrity manifests and calibration diagnostics.
+- storage/database.py and Alembic migrations own operational SQLite schema.
+  storage/forecasts.py owns immutable versions, schedule observations, locks and
+  actual revisions. It never backdates a live forecast.
+- refresh.py orchestrates explicit ingest/capture/features/frozen inference/predict/
+  publish/lock/reconcile steps with OS locks, atomic logs and catch-up schedule gating.
+- fantasy.py scores joint samples, persists manual weekly roster versions and assigns
+  exact eligible slots under kickoff locks. Unsupported contributions stay excluded.
+- paper.py owns Decimal odds, integer minor-credit staking and compensating result
+  corrections. It has no real-money or automatic wagering integration.
+- api/reads.py opens SQLite read-only and reads immutable snapshots. Typed routes
+  expose schedule, forecasts, actuals, evaluation, freshness and local tools.
+  security.py protects local writes; trusted-host checks protect request hosts.
+- frontend/src separates the app/dashboard, shared request helpers, fantasy and
+  paper interfaces. Strict TypeScript and pinned Prettier checks apply.
 
-- `settings.py`: validated environment settings; loopback binding only.
-- `cli.py`: version and API startup commands.
-- `api/app.py`: typed read-only health endpoint at `/api/health`.
-- `data/audit.py`: bounded public-source metadata and sample probes, without ingestion.
-- `data/manifests.py`: validated source-lineage and historical-availability contract.
-- `data/downloads.py`: immutable full downloads, caching, retry and integrity checks.
-- `data/normalize.py`: explicit type/ID/alias mappings and cross-source reconciliation.
-- `data/ingest.py`: single-writer orchestration and immutable snapshot preparation.
-- `data/snapshots.py`: captures, manual availability validation and as-of reads.
-- `features/pipeline.py`: weekly frozen team/player features and source eligibility.
-- `evaluation/harness.py`: expanding season folds and training-only preprocessing.
-- `models/games.py`: baselines, CPU model selection, registry and one-time holdout evaluation.
-- `models/cli.py`: explicit train/evaluate/promote/preview commands, separate from HTTP reads.
-- `data/participation.py`: optional snap identity/denominator audit; unknown absences stay unknown.
-- `models/players.py`: experimental causal participation/opportunity/production baselines.
-- `models/player_io.py`: integrity-checked, explicitly unpromoted player previews/scenarios.
-- `storage/database.py` and packaged Alembic migrations: SQLite run/cache/publication metadata.
-- `storage/analytics.py`: in-memory DuckDB reads of published Parquet snapshots.
-- `frontend/src`: connection dashboard with loading, success, failure, and retry states.
-- `scripts`: development and verification commands for PowerShell.
+## Storage authority
 
-Vite binds to 127.0.0.1:5173 and proxies `/api` to 127.0.0.1:8000. Both dev and
-preview use this proxy. The API defaults to 127.0.0.1:8000. There are no mutation
-routes or authentication in this stage. Hosting and multi-user access are deferred.
-If NFL_PORT changes, update the Vite proxy target to match.
+Raw blobs/source manifests and normalized versioned Parquet own analytical data.
+DuckDB can query it without owning a second operational copy. SQLite owns active
+season pointers, ingestion metadata, observation batches, forecast versions/locks,
+actual corrections and the paper ledger. History tables reject update/delete via
+triggers. Metadata/cache pointers remain mutable by the responsible writer.
 
-## Storage ownership
+Ignored artifacts contain fitted models, selected baseline definitions, immutable
+joint samples and evaluation/calibration outputs with hashes and input lineage.
+Ignored data/fantasy contains atomic manual-roster heads and content-addressed roster
+history. No user roster is inferred from source data. The explicitly named
+verification-oct21 roster/account are local test artifacts, not real league/bet history.
 
-- Immutable raw downloads and normalized versioned Parquet own analytical datasets
-  and source lineage under ignored `data/` paths.
-- DuckDB queries Parquet; it does not own a competing copy of operational entities.
-- SQLite owns ingestion metadata, cache/source-manifest references, immutable
-  snapshot catalog and active season pointers. Future stages add forecast locks,
-  result revisions, user roster entry and the virtual credit ledger.
-- Ignored `artifacts/` stores models and evaluation outputs; manifests link artifacts
-  to data hashes and dependency versions.
-- SQLite append-only observation batches own prospective schedule, roster and
-  structured availability history (migration 0002). They preserve observation and
-  local recording times; strict queries never backdate imported reports.
+## Execution and trust
 
-API operational reads use SQLite or immutable analytical snapshots. Scheduled
-writers must not compete with API requests for writable DuckDB handles. Storage
-libraries and migrations arrive only when their stages need them.
+The CLI is the only ingestion/training/refresh entry point. HTTP requests never
+train or download. Read requests do not create databases or run migrations. Local
+JSON writes may save rosters/paper state and compute numerical comparisons from
+verified samples, but require loopback Host/client, trusted origin, explicit local
+header and body-size limits. Model pickle files are trusted local outputs only,
+not an accepted download format.
 
-## Execution boundaries
+Vite binds 127.0.0.1:5173 and proxies /api to 127.0.0.1:8000; preview uses the same
+proxy. Settings reject public bind addresses. Development reload should watch only
+src/nfl_prediction, not data/artifacts. API/data/model workers must not compete for
+writable DuckDB handles. SQLite writers serialize critical publication/ledger steps.
 
-The CLI will orchestrate data, feature, model, simulation, and reconciliation modules.
-`nfl audit-sources` writes metadata/header evidence; it never populates operational
-stores. `nfl ingest` loads verified schedule, season/weekly roster, player/team stat,
-and selected PBP sources. It validates complete snapshot directories before one
-SQLite transaction publishes every requested season. See operations.md for exact
-atomicity, cache/recovery policy and completion evidence. The repository-root `/data/` is
-ignored, while `src/nfl_prediction/data/` is tracked application code.
+Each immutable game publishes atomically and locks independently. A failed later
+game does not erase earlier versions. A lock never silently reopens; rescheduling
+a locked game preserves its record but excludes it from scored/lineup eligibility.
+Actual/paper corrections append revisions rather than mutate prior evidence.
 
-API handlers stay thin and never train models or download large datasets. CPU
-execution is the default. Retraining remains an explicit separate operation.
-Windows scheduled tasks require explicit user action in a later stage.
+Daily/pregame schedules are implemented as an explicit CLI gate and optional manual
+Task Scheduler recipe. No task, service, remote, push or hosting exists as a setup
+side effect. A future hosted system requires separate auth, backups, job execution,
+concurrency, secret management and source-rights review; see decisions.md.

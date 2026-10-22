@@ -11,7 +11,7 @@ from nfl_prediction.settings import Settings
 def test_health_contract() -> None:
     async def request_health() -> httpx.Response:
         async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=app), base_url="http://test"
+            transport=httpx.ASGITransport(app=app), base_url="http://127.0.0.1"
         ) as client:
             return await client.get("/api/health")
 

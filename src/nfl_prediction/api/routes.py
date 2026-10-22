@@ -79,6 +79,7 @@ class Forecast(BaseModel):
 
 
 class Audit(BaseModel):
+    eligibility_status: str
     game_id: str
     versions: list[Forecast]
     official_forecast_id: str | None

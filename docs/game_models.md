@@ -53,3 +53,11 @@ All evaluation is approximate corrected-source historical analysis. Source timin
 kickoff-plus-12-hour completion approximation, home designation at neutral venues,
 rare ties and limited model scope remain limitations. No claim of market advantage
 or injury-adjusted accuracy is supported. Real measured results are in progress.md.
+
+## Current local registry note - October 21, 2026
+
+The evaluated selected game artifact was explicitly promoted locally for refresh
+inference. Its original dated verification JSON intentionally retains its original
+candidate status; that historical evidence is not rewritten. Refresh uses the
+promoted registry manifest, never retrains per request, and later reproduction
+training writes a separate unevaluated candidate without rescoring the holdout.
